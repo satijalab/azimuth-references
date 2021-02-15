@@ -1,0 +1,55 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest" 
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/pbmc_10k_v3_filtered_feature_bc_matrix.h5"
+
+############################## Reference ######################################
+rule download:
+    params:
+        data_url = "https://atlas.fredhutch.org/data/nygc/multimodal/pbmc_multimodal.h5seurat",
+        mapping_cells_url = "https://www.dropbox.com/s/6gumkybwtqq0k0w/pbmc_multimodal_reference_mapping_cells.txt",
+        plotting_cells_url = "https://www.dropbox.com/s/36m0addaeohgcf6/pbmc_multimodal_reference_plotting_cells.txt"
+    output:
+        "logs/download_data.log",
+        "data/pbmc_multimodal.h5seurat",
+        "data/pbmc_multimodal_reference_mapping_cells.txt",
+        "data/pbmc_multimodal_reference_plotting_cells.txt"
+    shell:
+        """
+        wget {params.data_url} -P data
+        wget {params.mapping_cells_url} -P data
+        wget {params.plotting_cells_url} -P data
+        echo "PBMC reference data downloaded on: $(date)" > logs/download_data.log
+        """
+
+rule export:
+    input:
+        script = "scripts/export.R",
+        data = "data/pbmc_multimodal.h5seurat",
+        mapping_cells = "data/pbmc_multimodal_reference_mapping_cells.txt",
+        plotting_cells = "data/pbmc_multimodal_reference_plotting_cells.txt"
+    output:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.mapping_cells} {input.plotting_cells} > logs/export.Rout 2>&1
+        """
+
+############################## Demo  ##########################################
+rule download_demo:
+    params:
+        url = "https://www.dropbox.com/s/cmbvq2og93lnl9z/pbmc_10k_v3_filtered_feature_bc_matrix.h5"
+    output:
+        "logs/download_demo_data.log",
+        "reference/pbmc_10k_v3_filtered_feature_bc_matrix.h5"
+    shell:
+        """
+        wget {params.url} -P reference
+        echo "PBMC demo data downloaded on: $(date)" > logs/download_demo_data.log
+        """

@@ -1,0 +1,112 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest"
+
+############################## All  ###########################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/peng_n7.rds"
+
+############################## Reference ######################################
+rule download:
+    params:
+        xin_url = "'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE114297&format=file'",
+        panc8_url = "https://www.dropbox.com/s/i43u5m7j08alo2l/panc8_3.0.2.rds"
+    output:
+        "logs/download_data.log",
+        "data/xin.tar",
+        "data/panc8_3.0.2.rds"
+    shell:
+        """
+        wget {params.xin_url} -P data
+        mv data/'index.html?acc=GSE114297&format=file' data/xin.tar
+        wget {params.panc8_url} -P data
+        echo "Human pancreas data downloaded on: $(date)" > logs/download_data.log
+        """
+
+rule setup_xin:
+    input:
+        script = "scripts/setup_xin.R",
+        data = "data/xin.tar"
+    output:
+        "seurat_objects/xin.rds"
+    shell:
+        """
+        mkdir data/xin
+        tar -xf {input.data} -C data/xin/
+        Rscript {input.script} {output} > logs/setup_xin.Rout 2>&1
+        """
+
+rule setup_panc8:
+    input:
+        script = "scripts/setup_panc8.R",
+        data = "data/panc8_3.0.2.rds"
+    output:
+        "seurat_objects/panc8.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {output} > logs/setup_panc8.Rout 2>&1
+        """
+
+rule integrate:
+    input:
+        panc8 = "seurat_objects/panc8.rds",
+        xin = "seurat_objects/xin.rds",
+        script = "scripts/integrate.R"
+    output:
+        "seurat_objects/pancreas_integrated.rds"
+    shell:
+        """
+        Rscript {input.script} {input.panc8} {input.xin} {output} > logs/integrate.Rout 2>&1
+        """
+
+rule annotate:
+    input: 
+        script = "scripts/annotate.R",
+        ob = "seurat_objects/pancreas_integrated.rds"
+    output:
+        "seurat_objects/annotations.rds"
+    shell:
+        """
+        Rscript {input.script} {input.ob} {output} > logs/annotate.Rout 2>&1
+        """
+
+rule export:
+    input:
+        script = "scripts/export.R",
+        ob = "seurat_objects/pancreas_integrated.rds",
+        ann = "seurat_objects/annotations.rds"
+    output:
+        "reference/ref.Rds",
+        "seurat_objects/fullref.Rds",
+        "reference/idx.annoy"
+    shell:
+        """
+        Rscript {input.script} {input.ob} {input.ann} > logs/export.Rout 2>&1
+        """
+
+############################## Demo ###########################################
+rule download_demo:
+    params:
+        url = "https://zenodo.org/record/3969339/files/StdWf1_PRJCA001063_CRC_besca2.raw.h5ad"
+    output:
+        "logs/download_peng_data.log",
+        "data/StdWf1_PRJCA001063_CRC_besca2.raw.h5ad"
+    shell:
+        """
+        wget {params.url} -P data
+        echo "Peng demo data downloaded on: $(date)" > logs/download_peng_data.log
+        """
+
+rule setup_demo:
+    input:
+        script = "scripts/setup_peng.R",
+        data = "data/StdWf1_PRJCA001063_CRC_besca2.raw.h5ad"
+    output:
+        "reference/peng_n7.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {output} > logs/setup_peng.Rout 2>&1
+        """
+

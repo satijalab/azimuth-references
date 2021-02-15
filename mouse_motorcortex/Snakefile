@@ -1,0 +1,81 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest" 
+
+############################## All  ###########################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/allen_mop_2020.rds"
+
+############################## Reference #######################################
+rule download:
+    params:
+        data_url = "http://data.nemoarchive.org/biccn/grant/lein/lein/2020_M1_study_analysis/Transcriptomics/sncell/10X/mouse/processed/counts/counts/M1/Mouse_M1_10xV3_Matrix.RDS",
+        metadata_url = "http://data.nemoarchive.org/biccn/grant/lein/lein/2020_M1_study_analysis/Transcriptomics/sncell/10X/mouse/processed/counts/counts/M1/Mouse_M1_10xV3_Metadata.feather"
+    output:
+        "logs/download_data.log",
+        "data/Mouse_M1_10xV3_Matrix.RDS",
+        "data/Mouse_M1_10xV3_Metadata.feather"
+    shell:
+        """
+        wget {params.data_url} -P data
+        wget {params.metadata_url} -P data
+        echo "Mouse motorcortex data downloaded on: $(date)" > logs/download_data.log
+        """
+
+rule integrate:
+    input:
+        data = "data/Mouse_M1_10xV3_Matrix.RDS",
+        metadata = "data/Mouse_M1_10xV3_Metadata.feather",
+        script = "scripts/integrate.R",
+
+    output:
+        "seurat_objects/mouse_m1_integrated.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.metadata} {output} > logs/integrate.Rout 2>&1
+        """
+
+rule export:
+    input:
+        script = "scripts/export.R",
+        ob = "seurat_objects/mouse_m1_integrated.rds"
+    output:
+        "reference/ref.Rds",
+        "seurat_objects/fullref.Rds",
+        "reference/idx.annoy"
+    shell:
+        """
+        Rscript {input.script} {input.ob} > logs/export.Rout 2>&1
+        """
+
+############################## Demo ############################################
+rule download_demo:
+    params:
+        data_url = "https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hip_10x/matrix.csv",
+        metadata_url = "https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_mouse_ctx-hip_10x/metadata.csv"
+    output:
+        "logs/download_demo_data.log",
+        "data/demo/matrix.csv.gz",
+        "data/demo/metadata.csv"
+    shell:
+        """
+        wget {params.data_url} -P data/demo
+        gzip data/demo/matrix.csv
+        wget {params.metadata_url} -P data/demo
+        echo "Mouse motorcortex demo data downloaded on: $(date)" > logs/download_demo_data.log
+        """
+
+rule setup_demo:
+    input:
+        data = "data/demo/matrix.csv.gz",
+        metadata = "data/demo/metadata.csv",
+        script = "scripts/setup_demo.R",
+
+    output:
+        "reference/allen_mop_2020.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.metadata} {output} > logs/setup_demo.Rout 2>&1
+        """

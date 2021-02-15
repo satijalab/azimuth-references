@@ -1,0 +1,79 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest" 
+
+############################## All  ###########################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/allen_m1c_2019_ssv4.rds"
+
+############################## Data Download ##################################
+rule download:
+    params:
+        data_url = "http://data.nemoarchive.org/biccn/grant/lein/lein/2020_M1_study_analysis/Transcriptomics/sncell/10X/human/processed/counts/counts/M1/Human_M1_10xV3_Matrix.RDS",
+        metadata_url = "http://data.nemoarchive.org/biccn/grant/lein/lein/2020_M1_study_analysis/Transcriptomics/sncell/10X/human/processed/counts/counts/M1/Human_M1_10xV3_Metadata.feather"
+    output:
+        "logs/download_data.log",
+        "data/Human_M1_10xV3_Matrix.RDS",
+        "data/Human_M1_10xV3_Metadata.feather"
+    shell:
+        """
+        wget {params.data_url} -P data
+        wget {params.metadata_url} -P data
+        echo "Human motorcortex data downloaded on: $(date)" > logs/download_data.log
+        """
+
+rule integrate:
+    input:
+        data = "data/Human_M1_10xV3_Matrix.RDS",
+        metadata = "data/Human_M1_10xV3_Metadata.feather",
+        script = "scripts/integrate.R"
+    output:
+        "seurat_objects/human_m1_integrated.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.metadata} {output} > logs/integrate.Rout 2>&1
+        """
+
+rule export:
+    input:
+        script = "scripts/export.R",
+        ob = "seurat_objects/human_m1_integrated.rds"
+    output:
+        "reference/ref.Rds",
+        "seurat_objects/fullref.Rds",
+        "reference/idx.annoy",
+    shell:
+        """
+        Rscript {input.script} {input.ob} > logs/export.Rout 2>&1
+        """
+
+rule download_demo:
+    params:
+        data_url = "https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_human_ctx_smart-seq/matrix.csv",
+        metadata_url = "https://idk-etl-prod-download-bucket.s3.amazonaws.com/aibs_human_ctx_smart-seq/metadata.csv"
+    output:
+        "logs/download_demo_data.log",
+        "data/demo/matrix.csv.gz",
+        "data/demo/metadata.csv"
+    shell:
+        """
+        wget {params.data_url} -P data/demo
+        gzip data/demo/matrix.csv
+        wget {params.metadata_url} -P data/demo
+        echo "Human motorcortex demo data downloaded on: $(date)" > logs/download_demo_data.log
+        """
+
+rule setup_demo:
+    input:
+        data = "data/demo/matrix.csv.gz",
+        metadata = "data/demo/metadata.csv",
+        script = "scripts/setup_demo.R",
+
+    output:
+        "reference/allen_m1c_2019_ssv4.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.metadata} {output} > logs/setup_demo.Rout 2>&1
+        """
