@@ -9,3 +9,7 @@ This repository contains the Dockerfile and snakemake workflows that are used to
 ```
 snakemake --use-singularity --cores 1 all
 ```
+
+# Reference format
+
+The Azimuth package provides the `AzimuthReference` function to facilitate converting existing Seurat objects into the specific format expected by Azimuth. Details on the required reference format can be viewed [here](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format). For examples starting with a Seurat object, see the `export.R` scripts in the workflows in this repo (e.g. [human pancreas](https://github.com/satijalab/azimuth-references/blob/master/human_pancreas/scripts/export.R)). 
