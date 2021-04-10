@@ -13,6 +13,10 @@ src/*.dll
 *.annoy
 **/logs
 **/data
+**/seurat-objects/
+**/seurat_objects/
+**/vitessce/
 **/.snakemake
 **/.snakemake_timestamp
 **/.wget-hsts
+**/**/.cache

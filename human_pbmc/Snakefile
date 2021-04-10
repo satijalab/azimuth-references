@@ -53,3 +53,44 @@ rule download_demo:
         wget {params.url} -P reference
         echo "PBMC demo data downloaded on: $(date)" > logs/download_demo_data.log
         """
+
+rule download_pbmc_expression:
+    params:
+        url = "'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE164378&format=file'"
+    output:
+        "data/GSM5008737_RNA_3P-matrix.mtx.gz",
+        "data/GSM5008737_RNA_3P-barcodes.tsv.gz",
+        "data/GSM5008737_RNA_3P-features.tsv.gz"
+    shell:
+        """
+        wget -O data/GSE164378_RAW.tar {params.url}
+        tar -xvf data/GSE164378_RAW.tar -C data/
+        rm data/*TCR*
+        rm data/*BCR*
+        rm data/*5P*
+        rm data/*ADT_3P*
+        rm data/*HTO_3P*
+        """
+
+rule export_zarr:
+    input: 
+        ref = "reference/ref.Rds",
+        fullref = "data/pbmc_multimodal.h5seurat",
+        rna_mat = "data/GSM5008737_RNA_3P-matrix.mtx.gz",
+        rna_cells = "data/GSM5008737_RNA_3P-barcodes.tsv.gz",
+        rna_features = "data/GSM5008737_RNA_3P-features.tsv.gz",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {input.rna_mat} {input.rna_cells} {input.rna_features} {output.h5Seurat} > logs/export_zarr_anndata.Rout 2>&1
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """
+
