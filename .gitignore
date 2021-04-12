@@ -16,6 +16,7 @@ src/*.dll
 **/seurat-objects/
 **/seurat_objects/
 **/vitessce/
+!docker/vitessce/
 **/.snakemake
 **/.snakemake_timestamp
 **/.wget-hsts
