@@ -1,0 +1,85 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest" 
+envvars:
+    "SYNAPSE_ID",
+    "SYNAPSE_KEY"
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/pbmc_10k_v3_filtered_feature_bc_matrix.h5"
+
+############################## Reference ######################################
+rule download:
+    params:
+        user = os.environ["SYNAPSE_ID"],
+        key = os.environ["SYNAPSE_KEY"]
+    output:
+        "data/krasnow_hlca_10x_UMIs.csv",
+        "data/krasnow_hlca_10x_metadata.csv"
+    shell:
+        """	
+        mkdir -p data/
+        mkdir -p logs
+        cd data
+        synapse -u {params.user} -p {params.key} get syn21560510 
+        synapse -u {params.user} -p {params.key} get syn21560409
+        echo "Krasnow data downloaded on: $(date)" > ../logs/download_data.log
+        """
+
+rule setup:
+    input:
+        script = "scripts/setup.R",
+        data = "data/krasnow_hlca_10x_UMIs.csv",
+        metadata = "data/krasnow_hlca_10x_metadata.csv"
+    output:
+        "seurat_objects/krasnow_lung.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.metadata} {output} > logs/setup.Rout 2>&1
+        """
+
+rule export:
+    input:
+        script = "scripts/export.R",
+        ob = "seurat_objects/krasnow_lung.rds"
+    output:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "seurat_objects/fullref.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.ob} > logs/export.Rout 2>&1
+        """
+
+############################## Demo  ##########################################
+rule download_demo:
+    params:
+        data_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE130nnn/GSE130148/suppl/GSE130148%5Fraw%5Fcounts%2ERData%2Egz",
+        metadata_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE130nnn/GSE130148/suppl/GSE130148%5Fbarcodes%5Fcell%5Ftypes%2Etxt%2Egz"
+    output:
+        "logs/download_demo_data.log",
+        "data/GSE130148_raw_counts.RData",
+        "data/GSE130148_barcodes_cell_types.txt.gz"
+    shell:
+        """
+        wget {params.data_url} -P data
+        gzip -d data/GSE130148_raw_counts.RData.gz
+        wget {params.metadata_url} -P data
+        echo "Lung demo data downloaded on: $(date)" > logs/download_demo_data.log
+        """
+
+rule setup_demo:
+    input:
+        script = "scripts/setup_demo.R",
+        data = "data/GSE130148_raw_counts.RData",
+        metadata = "data/GSE130148_barcodes_cell_types.txt.gz"
+    output:
+        "reference/braga_lung_demo.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {input.metadata} {output} > logs/setup_demo.log 2>&1
+        """
+
