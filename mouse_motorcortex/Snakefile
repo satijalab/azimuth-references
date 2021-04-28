@@ -11,8 +11,8 @@ rule all:
 ############################## Reference #######################################
 rule download:
     params:
-        data_url = "http://data.nemoarchive.org/biccn/grant/lein/lein/2020_M1_study_analysis/Transcriptomics/sncell/10X/mouse/processed/counts/counts/M1/Mouse_M1_10xV3_Matrix.RDS",
-        metadata_url = "http://data.nemoarchive.org/biccn/grant/lein/lein/2020_M1_study_analysis/Transcriptomics/sncell/10X/mouse/processed/counts/counts/M1/Mouse_M1_10xV3_Metadata.feather"
+        data_url = "http://data.nemoarchive.org/publication_release/Lein_2020_M1_study_analysis/Transcriptomics/sncell/10X/mouse/processed/counts/counts/M1/Mouse_M1_10xV3_Matrix.RDS",
+        metadata_url = "http://data.nemoarchive.org/publication_release/Lein_2020_M1_study_analysis/Transcriptomics/sncell/10X/mouse/processed/counts/counts/M1/Mouse_M1_10xV3_Metadata.feather"
     output:
         "logs/download_data.log",
         "data/Mouse_M1_10xV3_Matrix.RDS",
