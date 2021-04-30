@@ -7,23 +7,10 @@
 # mv data/lind_data/GSM2741551_count-table-human16w.tsv data/lind_data/counts.tsv
 
 args <- commandArgs(trailingOnly = TRUE)
-library(optparse)
 library(stringr)
-option_list = list(
-  make_option(c("-p", "--path"), type="character", default=NULL, 
-              help="path to directory with data", metavar="character"),
-  make_option(c("-f", "--counts-file"), type="character", default=NULL,
-              help="path to file with counts data", metavar="character"),
-  make_option(c("-m", "--metadata-file"), type="character", default=NULL,
-              help="path to metadata file", metavar="character")
-)
-opt_parser = OptionParser(option_list = option_list)
-opt = parse_args(opt_parser)
-
-# create object
 library(Seurat)
 library(magrittr)
-counts <- read.csv(opt$`counts-file`,sep='\t',row.names=1)
+counts <- read.csv(args[1],sep='\t',row.names=1)
 lind <- CreateSeuratObject(counts)
 
 #process

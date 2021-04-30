@@ -2,20 +2,6 @@
 # wget 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE81547&format=file' -O data/enge_data/enge.tar
 # tar -xvf data/enge_data/enge.tar
 
-# parse args
-args <- commandArgs(trailingOnly = TRUE)
-library(optparse)
-library(stringr)
-option_list = list(
-  make_option(c("-p", "--path"), type="character", default=NULL, 
-              help="path to directory with data", metavar="character"),
-  make_option(c("-f", "--counts-file"), type="character", default=NULL,
-              help="path to file with counts data", metavar="character"),
-  make_option(c("-m", "--metadata-file"), type="character", default=NULL,
-              help="path to metadata file", metavar="character")
-)
-opt_parser = OptionParser(option_list = option_list)
-opt = parse_args(opt_parser)
 
 library(Seurat)
 library(magrittr)
@@ -32,7 +18,7 @@ annotate <- function(obj, curr, new) {
 }
 
 # read files
-path <- opt$path
+path <- args[1]
 if (str_sub(path,nchar(path)) != "/") {
   path <- paste0(path,'/')
 }

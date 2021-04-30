@@ -1,36 +1,19 @@
 #!/usr/bin/env Rscript
 
-# parse args
-args <- commandArgs(trailingOnly = TRUE)
-library(optparse)
-library(stringr)
-option_list = list(
-  make_option(c("-i", "--input"), type="character", default=NULL, 
-              help="count matrix file(s)", metavar="character"),
-  make_option(c("-c", "--cell-metadata"), type="character", default=NULL,
-              help="cell metadata RDS file path", metavar="character"),
-  make_option(c("-g", "--gene-metadata"), type="character", default=NULL, 
-              help="gene metadata RDS file path", metavar="character"),
-  make_option(c("-r", "--ref"), type="character", default=NULL, 
-              help="reference file to exclude cells", metavar="character")
-)
-opt_parser = OptionParser(option_list = option_list)
-opt = parse_args(opt_parser)
-opt$input <- str_split(opt$input,' ')[[1]]
-
-print(opt$input)
 # read matrix and metadata
+args <- commandArgs(trailingOnly = TRUE)
 library(Seurat)
 library(stringr)
 library(magrittr)
-ref <- readRDS(opt$ref)
-df_gene <- readRDS(opt$`gene-metadata`)
-df_cell <- readRDS(opt$`cell-metadata`)
+ref <- readRDS(args[1])
+samples <- str_split(args[2], ' ')[[1]]
+df_cell <- readRDS(args[3])
+df_gene <- readRDS(args[4])
 rownames(df_cell) <- df_cell$sample
 
 objs <- list()
 # load and subset
-for (i in opt$input) {
+for (i in samples) {
   mat <- readRDS(i)
   mat <- mat[, sample(1:ncol(mat), size=min(ncol(mat),5000))]
   objs <- c(objs,mat)

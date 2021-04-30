@@ -63,7 +63,7 @@ rule preprocess_BBI_reference:
     output:
         "out/ref_intermediate.Rds"
     shell:
-        "Rscript scripts/preprocess_BBI_reference.R --input {input.counts} --cell-metadata {input.cell_metadata} --gene-metadata {input.gene_metadata}"
+        "Rscript scripts/preprocess_BBI_reference.R {input.counts} {input.cell_metadata} {input.gene_metadata}"
 
 rule make_BBI_reference:
     input: 
@@ -75,7 +75,7 @@ rule make_BBI_reference:
         "out/idx.annoy",
         "out/fullref.Rds"
     shell:
-        "Rscript scripts/make_BBI_reference.R --input {input.processed_ref} --cell-metadata {input.cell_metadata} --gene-metadata {input.gene_metadata}"
+        "Rscript scripts/make_BBI_reference.R {input.processed_ref} {input.cell_metadata} {input.gene_metadata}"
 
 
 # ############################## Demos  ###########################################
@@ -89,7 +89,7 @@ rule make_BBI_query:
     output:
         "out/bbi_query.rds"
     shell:
-        "Rscript scripts/setup_BBI_query.R --ref {input.ref} --input '{input.samples}' --cell-metadata {input.cell_metadata} --gene-metadata {input.gene_metadata}"
+        "Rscript scripts/setup_BBI_query.R {input.ref} '{input.samples}' {input.cell_metadata} {input.gene_metadata}"
 
 rule setup_enge:
     input:
@@ -98,7 +98,7 @@ rule setup_enge:
     output:
         "out/enge.rds"
     shell:
-        "Rscript scripts/setup_enge.R --path {input.path}"
+        "Rscript scripts/setup_enge.R {input.path}"
 
 rule setup_asp:
     input:
@@ -107,7 +107,7 @@ rule setup_asp:
     output:
         "out/asp.rds"
     shell:
-        "Rscript scripts/setup_asp.R --counts-file {input.counts} --metadata-file {input.metadata}"
+        "Rscript scripts/setup_asp.R {input.counts} {input.metadata}"
 
 rule setup_lind:
     input:
@@ -115,7 +115,7 @@ rule setup_lind:
     output:
         "out/lind.rds"
     shell:
-        "Rscript scripts/setup_lind.R --counts-file {input}"
+        "Rscript scripts/setup_lind.R {input}"
 
 rule download_enge:
     output:
