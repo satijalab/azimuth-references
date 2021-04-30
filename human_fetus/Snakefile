@@ -1,0 +1,183 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest"
+
+ORGANS = [
+    "Adrenal", "Cerebellum", "Cerebrum", "Intestine", "Heart", "Liver", "Lung", "Muscle", 
+    "Pancreas", "Placenta", "Eye", "Spleen", "Stomach", "Thymus"
+]
+
+############################## All  ###########################################
+rule all:
+    input:
+        "out/ref.Rds",
+        "out/idx.annoy",
+        "out/fullref.Rds",
+        "out/bbi_query.rds",
+        "out/asp.rds",
+        "out/lind.rds",
+        "out/enge.rds",
+        "vitessce/vitessce_ref.h5Seurat",
+        "vitessce/vitessce_ref.h5ad",
+        directory("vitessce/vitessce_ref.zarr")
+
+
+############################## BBI Downloads  ###########################################
+
+rule download_BBI_metadata:
+    params:
+        cell_metadata = "https://atlas.fredhutch.org/data/bbi/descartes/human_gtex/downloads/data_summarize_fetus_data/df_cell.RDS",
+        gene_metadata = "https://atlas.fredhutch.org/data/bbi/descartes/human_gtex/downloads/data_summarize_fetus_data/df_gene.RDS"
+    output:
+        cell_metadata = "data/df_cell.RDS",
+        gene_metadata = "data/df_gene.RDS"
+    shell:
+        """
+        wget {params.cell_metadata} -O {output.cell_metadata}
+        wget {params.gene_metadata} -O {output.gene_metadata}
+        """
+
+rule download_BBI_subsampled: 
+    params:
+        counts = "https://atlas.fredhutch.org/data/bbi/descartes/human_gtex/downloads/data_summarize_fetus_data/gene_count_sampled.RDS"
+    output:
+        counts = "data/gene_count_sampled.RDS"
+    shell:
+        "wget {params.counts} -O {output.counts}"
+
+rule download_BBI_individual_organs:
+    params:
+        organ = "https://atlas.fredhutch.org/data/bbi/descartes/human_gtex/downloads/data_summarize_fetus_data/{sample}_gene_count.RDS"
+    output:
+        organ = "data/{sample}_gene_count.RDS"
+    shell:
+        "wget {params.organ} -O {output.organ}"
+
+
+############################## Reference  ###########################################
+
+rule preprocess_BBI_reference:
+    input: 
+        counts = "data/gene_count_sampled.RDS",
+        cell_metadata = "data/df_cell.RDS",
+        gene_metadata = "data/df_gene.RDS"
+    output:
+        "out/ref_intermediate.Rds"
+    shell:
+        "Rscript scripts/preprocess_BBI_reference.R --input {input.counts} --cell-metadata {input.cell_metadata} --gene-metadata {input.gene_metadata}"
+
+rule make_BBI_reference:
+    input: 
+        processed_ref = "out/ref_intermediate.Rds",
+        cell_metadata = "data/df_cell.RDS",
+        gene_metadata = "data/df_gene.RDS"
+    output:
+        "out/ref.Rds",
+        "out/idx.annoy",
+        "out/fullref.Rds"
+    shell:
+        "Rscript scripts/make_BBI_reference.R --input {input.processed_ref} --cell-metadata {input.cell_metadata} --gene-metadata {input.gene_metadata}"
+
+
+# ############################## Demos  ###########################################
+
+rule make_BBI_query:
+    input: 
+        samples = expand("data/{sample}_gene_count.RDS", sample = ORGANS),
+        cell_metadata = "data/df_cell.RDS",
+        gene_metadata = "data/df_gene.RDS",
+        ref = "out/ref.Rds"
+    output:
+        "out/bbi_query.rds"
+    shell:
+        "Rscript scripts/setup_BBI_query.R --ref {input.ref} --input '{input.samples}' --cell-metadata {input.cell_metadata} --gene-metadata {input.gene_metadata}"
+
+rule setup_enge:
+    input:
+        path = "data/enge_data/",
+        tar = "data/enge_data/enge.tar"
+    output:
+        "out/enge.rds"
+    shell:
+        "Rscript scripts/setup_enge.R --path {input.path}"
+
+rule setup_asp:
+    input:
+        counts = "data/asp_data/counts_filtered.tsv",
+        metadata = "data/asp_data/md_filtered.tsv"
+    output:
+        "out/asp.rds"
+    shell:
+        "Rscript scripts/setup_asp.R --counts-file {input.counts} --metadata-file {input.metadata}"
+
+rule setup_lind:
+    input:
+        "data/lind_data/counts.tsv"
+    output:
+        "out/lind.rds"
+    shell:
+        "Rscript scripts/setup_lind.R --counts-file {input}"
+
+rule download_enge:
+    output:
+        "data/enge_data/",
+        "data/enge_data/enge.tar"
+    shell:
+        """
+        mkdir -p data/enge_data
+        cd data/enge_data
+        wget 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE81547&format=file' -O enge.tar
+        tar -xvf enge.tar
+        """
+
+rule download_asp:
+    output:
+        "data/asp_data/counts_filtered.tsv",
+        "data/asp_data/md_filtered.tsv"
+    shell:
+        """
+        mkdir -p data/asp_data
+        cd data/asp_data
+        wget 'https://md-datasets-cache-zipfiles-prod.s3.eu-west-1.amazonaws.com/mbvhhf8m62-2.zip'
+        unzip mbvhhf8m62-2.zip
+        unzip Filtered/'Developmental_heart_filtered_scRNA-seq_and_meta_data.zip'
+        gunzip share_files/*
+        mv share_files/all_cells_count_matrix_filtered.tsv counts_filtered.tsv
+        mv share_files/all_cells_meta_data_filtered.tsv md_filtered.tsv
+
+        """
+
+rule download_lind:
+    output:
+        "data/lind_data/counts.tsv"
+    shell:
+        """
+        mkdir -p data/lind_data
+        cd data/lind_data
+        wget 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE102596&format=file' -O lind.tar
+        tar -xvf lind.tar
+        gunzip GSM2741551_count-table-human16w.tsv.gz
+        mv GSM2741551_count-table-human16w.tsv counts.tsv
+        """
+
+# ############################## Zarr  ###########################################
+
+rule export_zarr:
+    input:
+        ref = "out/ref.Rds",
+        fullref = "out/fullref.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat} 75000
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """
+
+
