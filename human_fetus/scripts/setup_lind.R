@@ -7,15 +7,14 @@
 # mv data/lind_data/GSM2741551_count-table-human16w.tsv data/lind_data/counts.tsv
 
 args <- commandArgs(trailingOnly = TRUE)
-library(stringr)
 library(Seurat)
 library(magrittr)
-counts <- read.csv(args[1],sep='\t',row.names=1)
-lind <- CreateSeuratObject(counts)
+counts <- read.csv(file = args[1], sep = '\t', row.names = 1)
+lind <- CreateSeuratObject(counts = counts)
 
 #process
-lind <- lind %>% NormalizeData %>% FindVariableFeatures %>% ScaleData %>% RunPCA %>% RunUMAP(dims=1:50)
-lind <- lind %>% FindNeighbors(dims=1:50) %>% FindClusters(resolution=2)
+lind <- lind %>% NormalizeData %>% FindVariableFeatures %>% ScaleData %>% RunPCA %>% RunUMAP(dims = 1:50)
+lind <- lind %>% FindNeighbors(dims = 1:50) %>% FindClusters(resolution = 2)
 
 # # annotate based on gene markers given in Fig. 7
 # FeaturePlot(lind, features=toupper(c('plvap','gng11','tie1')))
@@ -42,8 +41,8 @@ curr <- list(2,c(10,20),18,c(16,17),c(4,9,5,14),
           c(7,19,21),c(0,1,8,3,11,13,6,12,15))
 new <- c('Developing vasculature','Immune','Erythroid','Cell-cycling','Nephron progenitors',
           'Differentiating nephron cell-types','Interstitial lineage')
-lind <- annotate(lind,curr,new) 
+lind <- annotate(lind, curr, new) 
 lind[['celltype']] <- Idents(lind)
 
 # save 
-saveRDS(lind, 'out/lind.rds') 
+saveRDS(object = lind, file = args[2]) 

@@ -11,12 +11,12 @@
 
 # parse args
 args <- commandArgs(trailingOnly = TRUE)
-library(stringr)
 library(Seurat)
-library(magrittr)
-counts <- read.csv(args[1],sep='\t',row.names = 1)
-metadata <- read.csv(args[2],sep='\t')
-metadata <- metadata[grep('\\(|\\)|/|\\&',metadata$X,invert=T),] # remove bad lines
-rownames(metadata) <- metadata$X; metadata$X <- NULL
-asp <- CreateSeuratObject(counts, meta.data = metadata)
-saveRDS(asp, 'out/asp.rds')
+
+counts <- read.csv(file = args[1], sep = '\t', row.names = 1)
+metadata <- read.csv(file = args[2], sep = '\t')
+metadata <- metadata[grep('\\(|\\)|/|\\&', metadata$X, invert = TRUE), ] # remove bad lines
+rownames(x = metadata) <- metadata$X
+metadata$X <- NULL
+asp <- CreateSeuratObject(counts = counts, meta.data = metadata)
+saveRDS(object = asp, file = args[3])
