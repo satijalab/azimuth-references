@@ -17,7 +17,13 @@ objs <- list()
 set.seed(seed = 42)
 for (i in samples) {
   mat <- readRDS(file = i)
-  mat <- mat[, sample(1:ncol(x = mat), size = min(ncol(x = mat), 5000))]
+  celltypes <- df_cell[colnames(mat), 'Organ_cell_lineage']
+  sample <- c()
+  for (j in unique(celltypes)) {
+    ct.sample <- which(celltypes == j)
+    sample <- c(sample, sample(ct.sample, size = min(length(x = ct.sample), 500)))
+  }
+  mat <- mat[, sample(sample, size = min(length(x = sample), 5000))]
   objs <- c(objs, mat)
 }
 

@@ -142,6 +142,7 @@ rule setup_lind:
         "reference/lind.rds"
     shell:
         """
+        mkdir -p logs
         Rscript {input.script} {input.data} {output} > logs/setup_lind.Rout 2>&1
         """
 
@@ -180,7 +181,8 @@ rule download_lind:
         "data/lind_data/counts.tsv"
     shell:
         """
-        mkdir -p data/lind_data
+        mkdir -p logs
+	mkdir -p data/lind_data
         cd data/lind_data
         wget 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE102596&format=file' -O lind.tar
         tar -xvf lind.tar
