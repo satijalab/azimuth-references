@@ -14,6 +14,7 @@ rownames(x = df_cell) <- df_cell$sample
 
 objs <- list()
 # load and subset
+set.seed(seed = 42)
 for (i in samples) {
   mat <- readRDS(file = i)
   mat <- mat[, sample(1:ncol(x = mat), size = min(ncol(x = mat), 5000))]
