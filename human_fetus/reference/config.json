@@ -1,0 +1,37 @@
+{
+  "Azimuth.app.reference": "/reference-data/human_fetus/",
+  "Azimuth.app.demodataset": [
+  {
+    "file": "/reference-data/human_fetus/asp.rds",
+    "name": "Demo neonatal heart"
+  },
+  {
+    "file": "/reference-data/human_fetus/enge.rds",
+    "name": "Demo adult pancreas"
+  },
+  {
+    "file": "/reference-data/human_fetus/lind.rds",
+    "name": "Demo fetal kidney"
+  },
+  {
+    "file": "/reference-data/human_fetus/bbi_query.rds",
+    "name": "Demo subsampled BBI"
+  }
+  ],
+  "Azimuth.app.max_cells": 100000,
+  "Azimuth.app.default_gene": "B2M",
+  "Azimuth.app.default_metadata": "annotation.l1",
+  "Azimuth.app.metadata_notransfer": "organ",
+  "Azimuth.app.homologs": "/reference-data/human_fetus/homologs.rds",
+  "Azimuth.app.metatableheatmap": "TRUE",
+  "Azimuth.app.overlayedreference": "TRUE",
+  "shiny.maxRequestSize": 1048576000,
+  "Azimuth.app.welcomebox": "div(\n    h3(\"Please upload a dataset to map to our human fetal development reference\"),\n    \"Upload a counts matrix from an scRNA-seq dataset of human fetus in one of the following formats: hdf5, rds, h5ad, h5seurat. This reference was constructed using data from \", a(\"Cao et al. 2020\", href =\"https://science.sciencemag.org/content/370/6518/eaba7721\", target = \"_blank\"), \", which applied the sci-RNA-seq3 protocol to 115 tissue samples spanning 15 organs and ranging from 72 to 129 days in estimated post-conceptual age. To construct the reference, we used 377,456 cells and their associated annotations available \", a(\"here\", href =\"https://descartes.brotmanbaty.org/bbi/human-gene-expression-during-development/\", target = \"_blank\"), \". For testing, we provide datasets consisting of 3,777 neonatal cardiac cells from \",\n    a(\"Asp et al. 2019\",\n      href=\"https://doi.org/10.1016/j.cell.2019.11.025\",\n      target=\"_blank\"), # open in new browser tab\n \", 3,745 fetal kidney cells from \",\n    a(\"Lindstrom et al. 2018\",\n      href=\"https://doi.org/10.1016/j.devcel.2018.05.010\",\n      target=\"_blank\"), # open in new browser tab\n \", and a subsampled set of roughly 30,000 human fetal cells from \", a(\"Cao et al. 2020\", href =\"https://science.sciencemag.org/content/370/6518/eaba7721\", target = \"_blank\"),\" that are not includuded in our reference. We also provide a demo dataset of 2,544 adult pancreas cells from \",\n    a(\"Enge et al. 2017\",\n      href=\"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE81547\",\n      target=\"_blank\"), # open in new browser tab\n \" as an example for how to link adult cell types to their putative fetal precursors.\",  width = 12\n  )",
+  "Azimuth.map.pbcorthresh": -1,
+  "Azimuth.map.ndims": 100,
+  "Azimuth.app.do_adt": "FALSE",
+  "Azimuth.app.refuri": "https://seurat.nygenome.org/azimuth/references/v1.0.0/human_fetus"
+}
+
+
+
