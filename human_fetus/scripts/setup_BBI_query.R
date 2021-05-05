@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
 
-print("HI")
 # read matrix and metadata
 args <- commandArgs(trailingOnly = TRUE)
 library(Seurat)
@@ -21,9 +20,7 @@ for (i in samples) {
   celltypes <- df_cell[colnames(mat), 'Organ_cell_lineage']
   sample <- c()
   for (j in unique(celltypes)) {
-    print(j)
     ct.sample <- which(celltypes == j)
-    print(min(length(x = ct.sample), 500))
     sample <- c(sample, sample(ct.sample, size = min(length(x = ct.sample), 1000)))
   }
   mat <- mat[, sample]
