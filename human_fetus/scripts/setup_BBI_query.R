@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 
+print("HI")
 # read matrix and metadata
 args <- commandArgs(trailingOnly = TRUE)
 library(Seurat)
@@ -20,10 +21,12 @@ for (i in samples) {
   celltypes <- df_cell[colnames(mat), 'Organ_cell_lineage']
   sample <- c()
   for (j in unique(celltypes)) {
+    print(j)
     ct.sample <- which(celltypes == j)
-    sample <- c(sample, sample(ct.sample, size = min(length(x = ct.sample), 500)))
+    print(min(length(x = ct.sample), 500))
+    sample <- c(sample, sample(ct.sample, size = min(length(x = ct.sample), 1000)))
   }
-  mat <- mat[, sample(sample, size = min(length(x = sample), 5000))]
+  mat <- mat[, sample]
   objs <- c(objs, mat)
 }
 
@@ -39,5 +42,6 @@ merged.obj <- CreateSeuratObject(counts = merged.obj, meta.data = df_cell)
 
 # exclude reference cells and save
 merged.obj <- subset(merged.obj, cells = Cells(x = ref), invert = TRUE)
+
 merged.obj <- subset(merged.obj, features = which(x = rowSums(GetAssayData(object = merged.obj[['RNA']], slot = "counts")) > 0))
 saveRDS(object = merged.obj, file = args[18])
