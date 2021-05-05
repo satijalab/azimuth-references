@@ -13,6 +13,7 @@ src/*.dll
 *.annoy
 **/logs
 **/data
+**/out
 **/seurat-objects/
 **/seurat_objects/
 **/vitessce/
