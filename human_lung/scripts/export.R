@@ -34,19 +34,16 @@ l2.id <- list(
   c('Nonclassical Monocyte','Intermediate Monocyte'),
   c('Classical Monocyte','OLR1+ Classical Monocyte'),
   c('Airway Smooth Muscle','Vascular Smooth Muscle'),
-  c('Mesothelial','Lipofibroblast'),
   c('Alveolar Fibroblast','Adventitial Fibroblast'),
-  c('Myofibroblast','Fibromyocyte'),
   c('CD8+ Naive T','CD8+ Memory/Effector T'),
-  c('CD4+ Memory/Effector T','CD4+ Naive T'),
-  c('Neuroendocrine','Ionocyte')
+  c('CD4+ Memory/Effector T','CD4+ Naive T')
 )
 
 l1.id <- c(
   'Basophil/Mast','Ciliated','Alveolar Epithelial Type 2','Bronchial Vessel',
   'Capillary Intermediate','Basal','Dendritic','CD16+ Monocyte','CD14+ Monocyte',
-  'Smooth Muscle','Mesothelial','Fibroblast','Myofibroblast',
-  'CD8 T','CD4 T','Ionocyte'
+  'Smooth Muscle','Fibroblast',
+  'CD8 T','CD4 T'
 )
 
 ob <- annotate(ob, l2.id, l1.id)
