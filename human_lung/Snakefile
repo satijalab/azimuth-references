@@ -9,7 +9,7 @@ rule all:
     input:
         "reference/ref.Rds",
         "reference/idx.annoy",
-        "reference/pbmc_10k_v3_filtered_feature_bc_matrix.h5"
+        "reference/braga_lung_demo.Rds"
 
 ############################## Reference ######################################
 rule download:
