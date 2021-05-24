@@ -13,7 +13,12 @@ src/*.dll
 *.annoy
 **/logs
 **/data
+**/seurat-objects/
+**/seurat_objects/
+**/vitessce/
+!docker/vitessce/
 **/.snakemake
 **/.snakemake_timestamp
 **/.wget-hsts
 **/.synapseCache
+**/**/.cache
