@@ -83,3 +83,22 @@ rule setup_demo:
         Rscript {input.script} {input.data} {input.metadata} {output} > logs/setup_demo.log 2>&1
         """
 
+############################## Explorer  ########################################
+rule export_zarr:
+    input: 
+        ref = "reference/ref.Rds",
+        fullref = "seurat_objects/fullref.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat} > logs/export_zarr_anndata.Rout 2>&1
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
