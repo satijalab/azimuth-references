@@ -21,4 +21,5 @@ src/*.dll
 **/.snakemake
 **/.snakemake_timestamp
 **/.wget-hsts
+**/.synapseCache
 **/**/.cache
