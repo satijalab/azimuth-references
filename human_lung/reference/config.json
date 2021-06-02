@@ -8,7 +8,7 @@
   "Azimuth.app.welcomebox": "div(\n    h3(HTML(\"Please upload a dataset to map to our <b>human lung</b> reference\")),\n    \"Upload a counts matrix from an scRNA-seq dataset of human lung in one\n        of the following formats: hdf5, rds, h5ad, h5seurat\",\n    width = 12\n  )",
   "Azimuth.app.refdescriptor": "<div class='refdescriptor'><br>This reference consists of 65,662 human lung cells (10x Genomics v2) from <a href='https://www.nature.com/articles/s41586-020-2922-4' target='blank'>Travaglini et al. 2020</a>. Cells were sourced from three donor patients and from all lung tissue compartments (bronchi, bronchiole, alveoli) as well as circulating blood. For testing, we also provide a demo dataset of 10,360 human lung cells from <a href='https://www.nature.com/articles/s41591-019-0468-5', target='_blank'>Vieira-Braga et al, 2019</a> (Drop-seq), which is loaded automatically with the 'Load demo dataset' button or available for download <a href='https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE130148', target='blank'>here</a>.</div>",
   "shiny.maxRequestSize": 1048576000,
+  "Azimuth.app.refuri": "https://seurat.nygenome.org/azimuth/references/v1.0.0/human_lung", 
   "Azimuth.app.do_adt": "FALSE"
 }
-
 
