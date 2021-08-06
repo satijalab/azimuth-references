@@ -50,7 +50,7 @@ pagoda_batch_correction <- function(
     counts = t(x = counts), 
     meta.data = object[[]] 
   ) 
-  obj2 <- SCTransform(object = obj2, clip.range = c(-10, 10), variable.features.n = 5000)
+  obj2 <- SCTransform(object = obj2, clip.range = c(-10, 10))
   obj2 <- RunPCA(object = obj2) 
   obj2 <- RunUMAP(object = obj2, dims = 1:50, return.model = TRUE)
   return(obj2)
