@@ -6,6 +6,8 @@ rule all:
     input:
         "reference/ref.Rds",
         "reference/idx.annoy",
+        "reference/kidney_demo_stewart.rds",
+        "vitessce/vitessce_ref.h5ad"
 
 ############################## Reference #######################################
 rule download:
