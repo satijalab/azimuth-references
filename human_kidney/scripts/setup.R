@@ -126,4 +126,21 @@ annotation.l3 <- sapply(
   }
 )
 merged.nuconly$celltype <- annotation.l3
+
+# convert annotations to readable levels
+levels.l2 <- unlist(lapply(sort(unique(merged.nuconly$annotation.l2)),function(x) names(which.max(table(annotation.l3,merged.nuconly$annotation.l2)[,x]))))
+names(levels.l2) <- sort(unique(merged.nuconly$annotation.l2))
+
+translate.l2 <- data.frame(levels.l2)
+translate.l2["DCT",1] <- 'Distal Convoluted Tubule'
+annotation.l2 <- translate.l2[merged.nuconly$annotation.l2,1]
+
+new.l1 <- c("Ascending Thin Limb","Connecting Tubule","Distal Convoluted Tubule","Descending Thin Limb","Endothelial", "Fibroblast", "Intercalated", "Immune","Schwann", "Papillary Tip Epithelial",
+            "Principal","Parietal Epithelial", "Podocyte", "Proximal Tubule", "Thick Ascending Limb", "Vascular Smooth Muscle / Pericyte")
+translate.l1 <- data.frame(new.l1,row.names =sort(unique(merged.nuconly$annotation.l1)))
+annotation.l1 <- translate.l1[merged.nuconly$annotation.l1,1]
+merged.nuconly$annotation.l1 <- factor(annotation.l1,levels = sort(unique(annotation.l1)))
+merged.nuconly$annotation.l2 <- factor(annotation.l2,levels = sort(unique(annotation.l2)))
+merged.nuconly$annotation.l3 <- factor(annotation.l3,levels = sort(unique(annotation.l3)))
+
 saveRDS(object = merged.nuconly, file = args[9])

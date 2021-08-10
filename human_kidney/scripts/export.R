@@ -9,7 +9,7 @@ ob <- readRDS(file = args[1])
 ref <- AzimuthReference(
   object = ob, 
   refDR = 'pca',
-  metadata = c('annotation.l3', 'annotation.l2', 'annotation.l1', 'celltype'),
+  metadata = c('annotation.l3', 'annotation.l2', 'annotation.l1'),
   dims = 1:100,
   reference.version = "1.0.0"
 )
