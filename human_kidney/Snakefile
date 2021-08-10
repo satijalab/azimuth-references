@@ -1,0 +1,110 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:human_kidney-1.0.0" 
+
+############################## All  ###########################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/kidney_demo_stewart.rds",
+        "vitessce/vitessce_ref.h5ad"
+
+############################## Reference #######################################
+rule download:
+    input:
+        "links/dropbox_links.txt"
+    output:
+        "logs/download_data.log",
+        "data/kpmp_counts.mtx", 
+        "data/kpmp_features.tsv", 
+        "data/kpmp_cells.tsv",
+        "data/kpmp_metadata.csv",
+        "data/lake_counts.mtx", 
+        "data/lake_features.tsv", 
+        "data/lake_cells.tsv",
+        "data/lake_metadata.csv"
+    shell:
+        """
+        wget -i {input} -P data
+        echo "Human kidney data downloaded on: $(date)" > logs/download_data.log
+        """
+
+rule setup:
+    input:
+        "scripts/setup.R",
+        "data/kpmp_counts.mtx", 
+        "data/kpmp_features.tsv", 
+        "data/kpmp_cells.tsv",
+        "data/kpmp_metadata.csv",
+        "data/lake_counts.mtx", 
+        "data/lake_features.tsv", 
+        "data/lake_cells.tsv",
+        "data/lake_metadata.csv"
+    output:
+        "seurat_objects/fullref.Rds"
+    shell:
+        """
+        Rscript {input} {output} > logs/correct.Rout 2>&1
+        """
+
+rule export:
+    input:
+        script = "scripts/export.R",
+        ob = "seurat_objects/fullref.Rds"
+    output:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+    shell:
+        """
+        Rscript {input.script} {input.ob} {output} > logs/export.Rout 2>&1
+        """
+
+############################## Demo ############################################
+rule download_demo:
+    params:
+        data = "https://cellgeni.cog.sanger.ac.uk/kidneycellatlas/Mature_Full_v3.h5ad",
+        cells = "https://www.dropbox.com/s/7fb0wiyrv4hk6h6/stewart_cells.csv"
+    output:
+        "logs/download_demo_data.log",
+        "data/stewart_cells.csv",
+        "data/Mature_Full_v3.h5ad"
+    shell:
+        """
+        wget {params.data} -P data
+        wget {params.cells} -P data
+        echo "Kidney demo data downloaded on: $(date)" > logs/download_demo_data.log
+        """
+
+rule setup_demo:
+    input:
+        data = "data/Mature_Full_v3.h5ad",
+        cells = "data/stewart_cells.csv",
+        extract_script = "scripts/extract_h5ad.py",
+        setup_script = "scripts/setup_demo.R"
+    output:
+        "reference/kidney_demo_stewart.rds"
+    shell:
+        """
+        python3 {input.extract_script} 
+        Rscript {input.setup_script} {output} > logs/setup_demo.Rout 2>&1
+        """
+
+rule export_zarr:
+    input: 
+        ref = "reference/ref.Rds",
+        fullref = "seurat_objects/fullref.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat} > logs/export_zarr_anndata.Rout 2>&1
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """
+
