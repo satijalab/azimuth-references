@@ -1,6 +1,6 @@
 {
-  "Azimuth.app.reference": "/reference-data/",
-  "Azimuth.app.demodataset": "/reference-data/kidney_demo_stewart.rds",
+  "Azimuth.app.reference": "/reference-data/human_kidney/",
+  "Azimuth.app.demodataset": "/reference-data/human_kidney/kidney_demo_stewart.rds",
   "Azimuth.app.max_cells": 100000,
   "Azimuth.app.default_gene": "DEFB1",
   "Azimuth.app.metadata_notransfer": "library,subclass.full",
