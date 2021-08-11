@@ -26,7 +26,7 @@ ref <- AzimuthReference(
   refDR = 'pca',
   metadata = c('annotation.l3', 'annotation.l2', 'annotation.l1'),
   dims = 1:100,
-  reference.version = "1.0.0"
+  reference.version = "1.0.1"
 )
 
 saveRDS(object = ref, file = args[2])
