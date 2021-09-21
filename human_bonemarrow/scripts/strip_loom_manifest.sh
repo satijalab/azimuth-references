@@ -1,0 +1,1 @@
+awk 'BEGIN { FS = "\t" } { if (($35 == "bone marrow") && ($8 == "loom") && ($7 != "1M-immune-human-immune-10XV2.loom")) { print } }' $1 > $2
