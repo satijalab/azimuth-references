@@ -1,0 +1,106 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest" 
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+
+############################## Reference ######################################
+rule download:
+    params:
+        nhlbi_url = "'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE120221&format=file'"
+    output:
+        "logs/download_data.log",
+        "data/nhlbi.tar",
+        "data/mpal/GSM4138877_scRNA_PBMC_D4T2.rds"
+    shell:
+        """
+        wget {params.nhlbi_url} -P data
+        mv data/'index.html?acc=GSE120221&format=file'  data/nhlbi.tar
+        echo "Human bone marrow data downloaded on: $(date)" > logs/download_data.log
+        
+        wget -i datasets/mpal.txt -P data/mpal
+        gzip -d data/mpal/*.gz
+        """
+        
+rule download_hca:
+    input: 
+        script = "scripts/download_hca.R",
+        manifest = "data/hca/manifest.tsv"
+    output:
+        object = "seurat_objects/hca_list.rds",
+        manifest = "data/hca/manifest_loom.tsv"
+    threads: 12
+    shell:
+        """
+        # remove non-BMMC samples
+        sh scripts/strip_loom_manifest.sh {input.manifest} {output.manifest}
+        
+        # download loom files
+        Rscript {input.script} {output.manifest} {output.object}
+        """
+
+rule setup_nhbli:
+    input:
+        script = "scripts/nhlbi.R",
+        data = "data/nhlbi.tar"
+    output:
+        "seurat_objects/nhlbi.rds"
+    shell:
+        """
+        mkdir data/nhlbi
+        tar -xf {input.data} -C data/nhlbi
+        Rscript {input.script} {output} > logs/setup_nhlbi.Rout 2>&1
+        """
+
+rule process_mpal:
+    input:
+        script = "scripts/mpal.R",
+        object = "data/mpal/GSM4138877_scRNA_PBMC_D4T2.rds"
+    output:
+        "seurat_objects/mpal.rds"
+    shell:
+        """
+        Rscript {input.script} {output}
+        """
+
+rule integrate:
+    input:
+        nhlbi = "seurat_objects/nhlbi.rds",
+        hca = "seurat_objects/hca_list.rds",
+        mpal = "seurat_objects/mpal.rds",
+        script = "scripts/integrate.R"
+    output:
+        "seurat_objects/integrated_sct.rds"
+    threads: 8
+    shell:
+        """
+        Rscript {input.script} {input.nhlbi} {input.hca} {input.mpal} {output}
+        """
+
+rule spca:
+    input:
+        object = "seurat_objects/integrated_sct.rds",
+        annotations = "data/annotations.csv.gz",
+        script = "scripts/spca.R"
+    output: "seurat_objects/integrated.rds"
+    threads: 1
+    shell:
+        """
+        Rscript {input.script} {input.object} {input.annotations} {output}
+        """
+
+rule build_ref:
+    input:
+        object = "seurat_objects/integrated.rds",
+        script = "scripts/build_ref.R"
+    output:
+        object = "reference/ref.Rds",
+        index = "reference/idx.annoy"
+    threads: 1
+    shell:
+        """
+        Rscript {input.script} {input.object} {output.index} {output.object}
+        """
