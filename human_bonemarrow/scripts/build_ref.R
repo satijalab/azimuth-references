@@ -9,7 +9,7 @@ ob.ref <- AzimuthReference(
   refUMAP = "umap",
   refDR = "spca",
   refAssay = "SCT",
-  metadata = "celltype.l2",
+  metadata = c("celltype.l1", "celltype.l2"),
   dims = 1:50,
   reference.version = "1.0.0"
 )
