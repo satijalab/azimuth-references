@@ -1,0 +1,13 @@
+{
+    "Azimuth.app.reference": "/reference-data/",
+    "Azimuth.app.demodataset": "/reference-data/ts_opt.rds",
+    "Azimuth.app.max_cells": 100000,
+    "Azimuth.app.default_gene": "EMP2",
+    "Azimuth.app.default_metadata": "ann_level_3",
+    "Azimuth.app.welcomebox": "div(\n    h3(HTML(\"Please upload a dataset to map to the HLCA reference\")),\n    \"Upload a counts matrix from an scRNA-seq dataset of human lung in one\n        of the following formats: hdf5, rds, h5ad, h5seurat. For testing, we also provide a demo dataset of 21,080 cells from \",a(\"The Tabula Sapiens Consortium 2020\", href=\"https://www.biorxiv.org/content/10.1101/2021.07.19.452956v2\", target=\"_blank\"),\" which is loaded automatically with the 'Load demo dataset' button \",\n    width = 12\n  )",
+    "Azimuth.app.refdescriptor": "<div class='refdescriptor'></div>",
+    "shiny.maxRequestSize": 1048576000,
+    "Azimuth.app.do_adt": "FALSE",
+    "Azimuth.map.ndims":50
+}
+  
