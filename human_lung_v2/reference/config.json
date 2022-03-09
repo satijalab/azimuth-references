@@ -8,6 +8,6 @@
     "Azimuth.app.refdescriptor": "<div class='refdescriptor'></div>",
     "shiny.maxRequestSize": 1048576000,
     "Azimuth.app.do_adt": "FALSE",
-    "Azimuth.map.ndims":50
+    "Azimuth.map.ndims": 50
 }
   
