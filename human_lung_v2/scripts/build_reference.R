@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-library(devtools)
 library(Seurat)
 library(SeuratObject)
 library(Azimuth)
