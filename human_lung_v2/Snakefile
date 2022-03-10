@@ -1,11 +1,14 @@
 ############################## Config #########################################
 container: "docker://satijalab/azimuth-references:human_lung-2.0.0"
 
+############################## All ############################################
 rule all:
     input:
         "reference/ref.Rds",
         "reference/idx.annoy"
+        "reference/ts_opt.rds"
 
+############################## Reference ######################################
 rule download:
     output:
         "data/counts.rds",
@@ -34,3 +37,23 @@ rule build_reference:
         """
         Rscript {input.script} {input.counts} {input.annotations} {input.dr} {output.ref} {output.idx} {output.obj}
         """
+
+############################## Explorer  ########################################
+rule export_zarr:
+    input:
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat}
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
