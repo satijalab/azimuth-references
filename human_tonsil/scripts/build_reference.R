@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-# Script to build demo dataset for human tonsil reference 1.0.0
+# Script to build human tonsil reference 1.0.0
 
 # Rscript {input.script} {input.counts} {input.annotations} {input.dr} {output.ref} {output.idx} {output.obj}
 
