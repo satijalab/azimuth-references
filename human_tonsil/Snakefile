@@ -6,7 +6,7 @@ rule all:
     input:
         "reference/ref.Rds",
         "reference/idx.annoy",
-        "reference/ts_opt.rds",
+        "reference/demo.rds",
         "full_reference.Rds"
 
 ############################## Reference ######################################
