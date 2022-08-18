@@ -1,0 +1,103 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:human_adipose-1.0.0" 
+# containerized: "/brahms/mollag/snake/azimuth-references/human_adipose/docker/test.sif"
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+
+############################## Reference ######################################
+rule download:
+    params:
+        rna_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176067/suppl/GSE176067_RAW.tar",
+        nuc_barcodes_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.barcodes.tsv.gz",
+        nuc_features_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.features.tsv.gz",
+        nuc_mtx_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.mtx.gz",
+        all_url = "https://drive.google.com/uc?id=1ReTOuHsBHyW0TZ2D9mVdTzxAV0npyV7G"
+    output:
+        "logs/download_data.log",
+        "data/GSE176067_RAW.tar",
+        "data/nuc/barcodes.tsv.gz",
+        "data/nuc/features.tsv.gz",
+        "data/nuc/matrix.mtx.gz",
+        "data/human_all.rds"
+    shell:
+        """
+        wget {params.rna_url} -P data
+        wget {params.nuc_barcodes_url} -P data/nuc
+        wget {params.nuc_features_url} -P data/nuc
+        wget {params.nuc_mtx_url} -P data/nuc
+        gdown {params.all_url} -O data/human_all.rds
+        tar -xvf data/GSE176067_RAW.tar -C data/
+        mv data/nuc/GSE176171_Hs10X.counts.barcodes.tsv.gz data/nuc/barcodes.tsv.gz
+        mv data/nuc/GSE176171_Hs10X.counts.features.tsv.gz data/nuc/features.tsv.gz
+        mv data/nuc/GSE176171_Hs10X.counts.mtx.gz data/nuc/matrix.mtx.gz
+        echo "Adipose reference data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_reference:
+    input:
+        script = "scripts/build_reference.R",
+        rna = "data/GSE176067_RAW.tar",
+        nuc = "data/nuc", 
+        labels = "data/human_all.rds"
+    output:
+        ref = "reference/ref.Rds",
+        idx = "reference/idx.annoy",
+        obj = "full_reference.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.rna} {input.nuc} {input.labels} {output.ref} {output.idx} {output.obj}
+        """
+
+############################## Demo ######################################
+rule download_demo:
+    params:
+        demo_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE155nnn/GSE155960/suppl/GSE155960_RAW.tar"
+    output:
+        "logs/download_data.log",
+        "data/demo/GSE155960_RAW.tar",
+    shell:
+        """
+        wget {params.demo_url} -P data/demo/
+        tar -xvf data/demo/GSE155960_RAW.tar -C data/demo/
+        FILES=$(ls data/demo/*.gz)
+        for FILE in $FILES; do
+            gunzip $FILE
+        done
+        echo "Adipose demo data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_demo:
+    input:
+        demo_script = "scripts/build_demo.R",
+        demo = "data/demo"
+    output:
+         demo = "reference/demo.rds"
+    shell:
+        """
+        Rscript {input.demo_script} {input.demo} {output.demo}
+        """
+
+
+############################## Explorer  ########################################
+rule export_zarr:
+    input:
+        ref = "og_ref/ref.Rds",
+        fullref = "full_ref.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat}
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
