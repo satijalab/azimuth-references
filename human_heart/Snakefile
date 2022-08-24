@@ -1,0 +1,82 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:human_adipose-1.0.0" 
+# containerized: "/brahms/mollag/snake/azimuth-references/human_adipose/docker/test.sif"
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+
+############################## Reference ######################################
+rule download:
+    params:
+        science_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE165nnn/GSE165838/suppl/",
+        nature_url = "https://cellgeni.cog.sanger.ac.uk/heartcellatlas/data/global_raw.h5ad",
+        nature_cardio_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE183nnn/GSE183852/suppl/GSE183852_DCM_Integrated.Robj.gz"
+    output:
+        "logs/download_data.log",
+        "data/GSE165838/barcodes.tsv.gz",
+        "data/GSE165838/features.tsv.gz",
+        "data/GSE165838/matrix.mtx.gz",
+        "data/GSE165838/GSE165838_CARE_RNA_metadata.txt.gz",
+        "data/global_raw.h5ad",
+        "data/GSE183852_DCM_Integrated.Robj"
+    shell:
+        """
+        wget -nd -r -l 10 -e robots=off -np {params.science_url} -P data/GSE165838/ # -r -np -p -R "index.html*" -nd -r -l 10 -e robots=off -R "index.html*"
+        wget {params.nature_url} -P data
+        wget {params.nature_cardio_url} -P data
+        mv data/GSE165838/GSE165838_CARE_RNA_barcodes.txt.gz data/GSE165838/barcodes.txt.gz
+        mv data/GSE165838/GSE165838_CARE_RNA_counts.mtx.gz data/GSE165838/matrix.mtx.gz
+        mv data/GSE165838/GSE165838_CARE_RNA_features.tsv.gz data/GSE165838/features.tsv.gz
+        gunzip data/GSE165838/barcodes.txt.gz data/GSE165838/features.tsv.gz
+        sed -i '1d' data/GSE165838/barcodes.txt 
+        sed -i '1d' data/GSE165838/features.tsv
+        mv data/GSE165838/barcodes.txt data/GSE165838/barcodes.tsv
+        gzip data/GSE165838/barcodes.tsv data/GSE165838/features.tsv
+        gunzip data/GSE183852_DCM_Integrated.Robj.gz
+        echo "Heart reference data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_reference:
+    input:
+        script = "scripts/build_reference.R",
+        science = "data/GSE165838/",
+        nature = "data/global_raw.h5ad",
+        nature_cardio = "data/GSE183852_DCM_Integrated.Robj",
+        annotations = "data/celltype_annotations.csv"
+    output:
+        ref = "reference/ref.Rds",
+        idx = "reference/idx.annoy",
+        obj = "full_reference.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.science} {input.nature} {input.nature_cardio} {input.annotations} {output.ref} {output.idx} {output.obj} 
+        """
+############################## Demo ######################################
+rule download_demo:
+    params:
+        demo_url = '"https://seurat.nygenome.org/azimuth_snakemake_files/human_heart/healthy_human_4chamber_map_unnormalized_V4.h5ad"'
+    output:
+        "logs/download_data.log",
+        "data/demo/healthy_human_4chamber_map_unnormalized_V4.h5ad"
+    shell:
+        """
+        wget {params.demo_url} -P data/demo
+        echo "Demo data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_demo:
+    input:
+        script = "scripts/build_demo.R",
+        demo = "data/demo/"
+    output:
+        obj = "reference/demo.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.demo} {output.obj}
+        """
+
+
+
