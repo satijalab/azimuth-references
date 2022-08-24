@@ -6,7 +6,7 @@ rule all:
     input:
         "reference/ref.Rds",
         "reference/idx.annoy",
-        "reference/ts_opt.rds",
+        "reference/demo.rds",
         "full_reference.Rds"
 
 ############################## Reference ######################################
@@ -36,12 +36,13 @@ rule build_reference:
 ################################ Demo ########################################
 rule download_demo:
     output:
-        tonsil_1a = "data/Tonsil1a_count",
-        tonsil_1b = "data/Tonsil1b_count",
-        tonsil_2a = "data/Tonsil2a_count",
-        tonsil_2b = "data/Tonsil2b_count",
-        tonsil_3a = "data/Tonsil3a_count",
-        tonsil_3b = "data/Tonsil3b_count",   
+        tonsil_1a = directory("data/Tonsil1a_count"),
+        tonsil_1b = directory("data/Tonsil1b_count"),
+        tonsil_2a = directory("data/Tonsil2a_count"),
+        tonsil_2b = directory("data/Tonsil2b_count"),
+        tonsil_3a = directory("data/Tonsil3a_count"),
+        tonsil_3b = directory("data/Tonsil3b_count"),
+        demo_complete = touch("data/download_demo_complete.txt") # dummy file to reuquire rule completion before running build_demo rule
     shell:
         """
         wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051493/suppl/GSM5051493_Tonsil_1a_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
@@ -63,7 +64,8 @@ rule build_demo:
     input:
         demo_counts_dir = directory("data/"),
         demo_cell_calls_dir = directory("data/demo_cell_calls/"),
-        demo_script = "scripts/build_demo.R"
+        demo_script = "scripts/build_demo.R",
+        demo_complete = "data/download_demo_complete.txt"
     output:
         demo = "reference/demo.rds"
     shell:
