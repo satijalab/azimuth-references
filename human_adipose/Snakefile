@@ -14,22 +14,19 @@ rule download:
         rna_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176067/suppl/GSE176067_RAW.tar",
         nuc_barcodes_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.barcodes.tsv.gz",
         nuc_features_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.features.tsv.gz",
-        nuc_mtx_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.mtx.gz",
-        all_url = "https://drive.google.com/uc?id=1ReTOuHsBHyW0TZ2D9mVdTzxAV0npyV7G"
+        nuc_mtx_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE176nnn/GSE176171/suppl/GSE176171_Hs10X.counts.mtx.gz"
     output:
         "logs/download_data.log",
         "data/GSE176067_RAW.tar",
         "data/nuc/barcodes.tsv.gz",
         "data/nuc/features.tsv.gz",
-        "data/nuc/matrix.mtx.gz",
-        "data/human_all.rds"
+        "data/nuc/matrix.mtx.gz"
     shell:
         """
         wget {params.rna_url} -P data
         wget {params.nuc_barcodes_url} -P data/nuc
         wget {params.nuc_features_url} -P data/nuc
         wget {params.nuc_mtx_url} -P data/nuc
-        gdown {params.all_url} -O data/human_all.rds
         tar -xvf data/GSE176067_RAW.tar -C data/
         mv data/nuc/GSE176171_Hs10X.counts.barcodes.tsv.gz data/nuc/barcodes.tsv.gz
         mv data/nuc/GSE176171_Hs10X.counts.features.tsv.gz data/nuc/features.tsv.gz
@@ -42,14 +39,14 @@ rule build_reference:
         script = "scripts/build_reference.R",
         rna = "data/GSE176067_RAW.tar",
         nuc = "data/nuc", 
-        labels = "data/human_all.rds"
+        annotations = "data/celltype_annotations.csv"
     output:
         ref = "reference/ref.Rds",
         idx = "reference/idx.annoy",
         obj = "full_reference.Rds"
     shell:
         """
-        Rscript {input.script} {input.rna} {input.nuc} {input.labels} {output.ref} {output.idx} {output.obj}
+        Rscript {input.script} {input.rna} {input.nuc} {input.annotations} {output.ref} {output.idx} {output.obj}
         """
 
 ############################## Demo ######################################
@@ -85,8 +82,8 @@ rule build_demo:
 ############################## Explorer  ########################################
 rule export_zarr:
     input:
-        ref = "og_ref/ref.Rds",
-        fullref = "full_ref.Rds",
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
         script1 = "scripts/convert_to_h5ad.R",
         script2 = "scripts/convert_to_zarr.py"
     output:

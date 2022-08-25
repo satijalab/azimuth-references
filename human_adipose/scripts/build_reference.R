@@ -10,7 +10,7 @@ library(DoubletFinder)
 args = commandArgs(trailingOnly=TRUE)
 rna.path <- args[1]
 nuc.path <- args[2]
-labels.path <- args[3]
+annotations.path <- args[3]
 ref.path <- args[4]
 annoy.path <- args[5]
 full.obj.path <- args[6]
@@ -119,20 +119,9 @@ all.combined <- RunPCA(all.combined, verbose = FALSE)
 all.combined <- RunUMAP(all.combined, reduction = "pca", dims = 1:40)
 
 ########################## Annotation #########################################
-human_all_labeled <- readRDS(labels.path)
-  
-all.combined@meta.data$cell_names_2 <- paste0(all.combined@meta.data$orig.ident, "_", str_extract(row.names(all.combined@meta.data), "[ACGT]{11,16}"))
-all.combined@meta.data[all.combined$Number %in% c("12",  "13",  "266", "01",  "02",  "04",  "253", "254", "256", "255", "09",  "10",  "11"), ]$cell_names_2 <- row.names(all.combined@meta.data[all.combined$Number %in% c("12",  "13",  "266", "01",  "02",  "04",  "253", "254", "256", "255", "09",  "10",  "11"), ])
-
-all.combined[["celltype.l1"]] <- 'others'
-cells_both <- intersect(all.combined$cell_names_2, colnames(human_all_labeled))
-all.combined@meta.data[all.combined$cell_names_2 %in% cells_both, ]$celltype.l1 <- as.character(human_all_labeled$cell_type2[cells_both])
-all.combined <- subset(all.combined, subset = celltype.l1 != 'others')
-
-all.combined[["celltype.l2"]] <- 'others'
-cells_both <- intersect(all.combined$cell_names_2, colnames(human_all_labeled))
-all.combined@meta.data[all.combined$cell_names_2 %in% cells_both, ]$celltype.l2 <- as.character(human_all_labeled$cell_type[cells_both])
-all.combined <- subset(all.combined, subset = celltype.l2 != 'others')
+annotations <- read.csv(annotations.path, row.names = 1)
+all.combined <- AddMetaData(all.combined, annotations)
+all.combined <- subset(all.combined, subset = celltype.l1 != "NA")
 saveRDS(all.combined, full.obj.path)
 
 ################## Azimuth #####################################################
