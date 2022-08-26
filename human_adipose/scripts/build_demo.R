@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+# Script to build human adipose demo
+
 library(Seurat)
 
 args = commandArgs(trailingOnly=TRUE)

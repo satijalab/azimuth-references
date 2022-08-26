@@ -47,12 +47,12 @@ rule build_reference:
         nature_cardio = "data/GSE183852_DCM_Integrated.Robj",
         annotations = "data/celltype_annotations.csv"
     output:
-        ref = "reference/ref.Rds",
-        idx = "reference/idx.annoy",
+        #ref = "reference/ref.Rds",
+        #idx = "reference/idx.annoy",
         obj = "full_reference.Rds"
     shell:
         """
-        Rscript {input.script} {input.science} {input.nature} {input.nature_cardio} {input.annotations} {output.ref} {output.idx} {output.obj} 
+        Rscript {input.script} {input.science} {input.nature} {input.nature_cardio} {input.annotations} {output.obj} 
         """
 ############################## Demo ######################################
 rule download_demo:
@@ -70,13 +70,32 @@ rule download_demo:
 rule build_demo:
     input:
         script = "scripts/build_demo.R",
-        demo = "data/demo/"
+        demo = "data/demo/healthy_human_4chamber_map_unnormalized_V4.h5ad"
     output:
         obj = "reference/demo.Rds"
     shell:
         """
         Rscript {input.script} {input.demo} {output.obj}
         """
+        
+############################## Explorer  ########################################
+rule export_zarr:
+    input:
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat}
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
 
-
-
+        

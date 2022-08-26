@@ -1,11 +1,13 @@
 #!/usr/bin/env Rscript
+
+# Script to build human adipose reference 1.0.0
+
 library(Seurat)
 library(SeuratDisk)
 library(yaml)
 library(tidyverse)
 library(stringr)
 library(Azimuth)
-library(DoubletFinder)
 
 args = commandArgs(trailingOnly=TRUE)
 rna.path <- args[1]
