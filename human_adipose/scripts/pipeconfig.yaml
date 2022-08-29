@@ -1,0 +1,872 @@
+project_name: Human-All
+output_path: ./seurat/human/all
+species: human
+data:
+  Hs_SAT_SVF_235-1A-1:
+    path: data/GSM5354366_Hs_SAT_SVF_235-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-1A
+    library: Hs_SAT_SVF_235-1A-1
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age.range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi.range: 30-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 14
+  Hs_SAT_SVF_235-1A-2:
+    path: data/GSM5354367_Hs_SAT_SVF_235-1A-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-1A
+    library: Hs_SAT_SVF_235-1A-2
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_235-1B-1:
+    path: data/GSM5354368_Hs_SAT_SVF_235-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-1B
+    library: Hs_SAT_SVF_235-1B-1
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 14
+  Hs_SAT_SVF_235-1B-2:
+    path: data/GSM5354369_Hs_SAT_SVF_235-1B-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-1B
+    library: Hs_SAT_SVF_235-1B-2
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_235-2A-1:
+    path: data/GSM5354370_Hs_SAT_SVF_235-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-2A
+    library: Hs_SAT_SVF_235-2A-1
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 14
+  Hs_SAT_SVF_235-2A-2:
+    path: data/GSM5354371_Hs_SAT_SVF_235-2A-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-2A
+    library: Hs_SAT_SVF_235-2A-2
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_235-2B-1:
+    path: data/GSM5354372_Hs_SAT_SVF_235-2B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-2B
+    library: Hs_SAT_SVF_235-2B-1
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 14
+  Hs_SAT_SVF_235-2B-2:
+    path: data/GSM5354373_Hs_SAT_SVF_235-2B-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_235
+    subsample: Hs_SAT_SVF_235-2B
+    library: Hs_SAT_SVF_235-2B-2
+    individual: Hs235
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 36
+    bmi_range: 35-40
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_236-1A-1:
+    path: data/GSM5354374_Hs_SAT_SVF_236-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_236
+    subsample: Hs_SAT_SVF_236-1A
+    library: Hs_SAT_SVF_236-1A-1
+    individual: Hs236
+    source: thigh
+    depot: SAT
+    age: 35
+    age_range: 30-40
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_236-1A-2:
+    path: data/GSM5354375_Hs_SAT_SVF_236-1A-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_236
+    subsample: Hs_SAT_SVF_236-1A
+    library: Hs_SAT_SVF_236-1A-2
+    individual: Hs236
+    source: thigh
+    depot: SAT
+    age: 35
+    age_range: 30-40
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_236-1B-1:
+    path: data/GSM5354376_Hs_SAT_SVF_236-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_236
+    subsample: Hs_SAT_SVF_236-1B
+    library: Hs_SAT_SVF_236-1B-1
+    individual: Hs236
+    source: thigh
+    depot: SAT
+    age: 35
+    age_range: 30-40
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_236-2A-2:
+    path: data/GSM5354377_Hs_SAT_SVF_236-2A-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_236
+    subsample: Hs_SAT_SVF_236-2A
+    library: Hs_SAT_SVF_236-2A-2
+    individual: Hs236
+    source: thigh
+    depot: SAT
+    age: 35
+    age_range: 30-40
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_237-1A-1:
+    path: data/GSM5354378_Hs_SAT_SVF_237-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_237
+    subsample: Hs_SAT_SVF_237-1A
+    library: Hs_SAT_SVF_237-1A-1
+    individual: Hs237
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 23
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_237-2A-1:
+    path: data/GSM5354379_Hs_SAT_SVF_237-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_237
+    subsample: Hs_SAT_SVF_237-2A
+    library: Hs_SAT_SVF_237-2A-1
+    individual: Hs237
+    source: pannus
+    depot: SAT
+    age: 53
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 23
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_238-1A-1:
+    path: data/GSM5354380_Hs_SAT_SVF_238-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_238
+    subsample: Hs_SAT_SVF_238-1A
+    library: Hs_SAT_SVF_238-1A-1
+    individual: Hs238
+    source: pannus
+    depot: SAT
+    age: 49
+    age_range: 40-50
+    sex: female
+    race: Caucasian
+    bmi: 20
+    bmi_range: 15-20
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_238-1B-1:
+    path: data/GSM5354381_Hs_SAT_SVF_238-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_238
+    subsample: Hs_SAT_SVF_238-1B
+    library: Hs_SAT_SVF_238-1B-1
+    individual: Hs238
+    source: pannus
+    depot: SAT
+    age: 49
+    age_range: 40-50
+    sex: female
+    race: Caucasian
+    bmi: 20
+    bmi_range: 15-20
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_238-2A-1:
+    path: data/GSM5354382_Hs_SAT_SVF_238-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_238
+    subsample: Hs_SAT_SVF_238-2A
+    library: Hs_SAT_SVF_238-2A-1
+    individual: Hs238
+    source: pannus
+    depot: SAT
+    age: 49
+    age_range: 40-50
+    sex: female
+    race: Caucasian
+    bmi: 20
+    bmi_range: 15-20
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16 
+  Hs_SAT_SVF_238-2B-1:
+    path: data/GSM5354383_Hs_SAT_SVF_238-2B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_238
+    subsample: Hs_SAT_SVF_238-2B
+    library: Hs_SAT_SVF_238-2B-1
+    individual: Hs238
+    source: pannus
+    depot: SAT
+    age: 49
+    age_range: 40-50
+    sex: female
+    race: Caucasian
+    bmi: 20
+    bmi_range: 15-20
+    wtloss: none
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: easysep
+    pcr: 16
+  Hs_SAT_SVF_239-1A-1:
+    path: data/GSM5354384_Hs_SAT_SVF_239-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_239
+    subsample: Hs_SAT_SVF_239-1A
+    library: Hs_SAT_SVF_239-1A-1
+    individual: Hs239
+    source: pannus
+    depot: SAT
+    age: 71
+    age_range: 70-80
+    sex: female
+    race: Caucasian
+    bmi: 25
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_239-1B-2:
+    path: data/GSM5354385_Hs_SAT_SVF_239-1B-2.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_239
+    subsample: Hs_SAT_SVF_239-1B
+    library: Hs_SAT_SVF_239-1B-2
+    individual: Hs239
+    source: pannus
+    depot: SAT
+    age: 71
+    age_range: 70-80
+    sex: female
+    race: Caucasian
+    bmi: 25
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_239-2A-1:
+    path: data/GSM5354386_Hs_SAT_SVF_239-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_239
+    subsample: Hs_SAT_SVF_239-2A
+    library: Hs_SAT_SVF_239-2A-1
+    individual: Hs239
+    source: pannus
+    depot: SAT
+    age: 71
+    age_range: 70-80
+    sex: female
+    race: Caucasian
+    bmi: 25
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_239-3A-1:
+    path: data/GSM5354387_Hs_SAT_SVF_239-3A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_239
+    subsample: Hs_SAT_SVF_239-3A
+    library: Hs_SAT_SVF_239-3A-1
+    individual: Hs239
+    source: pannus
+    depot: SAT
+    age: 71
+    age_range: 70-80
+    sex: female
+    race: Caucasian
+    bmi: 25
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_239-3B-1:
+    path: data/GSM5354388_Hs_SAT_SVF_239-3B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_239
+    subsample: Hs_SAT_SVF_239-3B
+    library: Hs_SAT_SVF_239-3B-1
+    individual: Hs239
+    source: pannus
+    depot: SAT
+    age: 71
+    age_range: 70-80
+    sex: female
+    race: Caucasian
+    bmi: 25
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_239-3BC-1:
+    path: data/GSM5354389_Hs_SAT_SVF_239-3BC-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_239
+    subsample: Hs_SAT_SVF_239-3BC
+    library: Hs_SAT_SVF_239-3BC-1
+    individual: Hs239
+    source: pannus
+    depot: SAT
+    age: 71
+    age_range: 70-80
+    sex: female
+    race: Caucasian
+    bmi: 25
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_240-1B-1:
+    path: data/GSM5354390_Hs_SAT_SVF_240-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_240
+    subsample: Hs_SAT_SVF_240-1B
+    library: Hs_SAT_SVF_240-1B-1
+    individual: Hs240
+    source: pannus
+    depot: SAT
+    age: 59
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: diet
+    cancer: none
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_242-1B-1:
+    path: data/GSM5354391_Hs_SAT_SVF_242-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_242
+    subsample: Hs_SAT_SVF_242-1B
+    library: Hs_SAT_SVF_242-1B-1
+    individual: Hs242
+    source: pannus
+    depot: SAT
+    age: 59
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 23
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_242-2A-1:
+    path: data/GSM5354392_Hs_SAT_SVF_242-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_242
+    subsample: Hs_SAT_SVF_242-2A
+    library: Hs_SAT_SVF_242-2A-1
+    individual: Hs242
+    source: pannus
+    depot: SAT
+    age: 59
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 23
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_242-2B-1:
+    path: data/GSM5354393_Hs_SAT_SVF_242-2B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_242
+    subsample: Hs_SAT_SVF_242-2B
+    library: Hs_SAT_SVF_242-2B-1
+    individual: Hs242
+    source: pannus
+    depot: SAT
+    age: 59
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 23
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_242-3A-1:
+    path: data/GSM5354394_Hs_SAT_SVF_242-3A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_242
+    subsample: Hs_SAT_SVF_242-3A
+    library: Hs_SAT_SVF_242-3A-1
+    individual: Hs242
+    source: pannus
+    depot: SAT
+    age: 59
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 23
+    bmi_range: 20-25
+    wtloss: none
+    cancer: cancer
+    t2dm: none
+    digestion: 20min liberase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_248-1A-1:
+    path: data/GSM5354395_Hs_SAT_SVF_248-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_248
+    subsample: Hs_SAT_SVF_248-1A
+    library: Hs_SAT_SVF_248-1A-1
+    individual: Hs248
+    source: pannus
+    depot: SAT
+    age: 68
+    age_range: 60-70
+    sex: female
+    race: Caucasian
+    bmi: 32
+    bmi_range: 30-35
+    wtloss: lap band
+    cancer: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_248-1B-1:
+    path: data/GSM5354396_Hs_SAT_SVF_248-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_248
+    subsample: Hs_SAT_SVF_248-1B
+    library: Hs_SAT_SVF_248-1B-1
+    individual: Hs248
+    source: pannus
+    depot: SAT
+    age: 68
+    age_range: 60-70
+    sex: female
+    race: Caucasian
+    bmi: 32
+    bmi_range: 30-35
+    wtloss: lap band
+    cancer: none
+    t2dm: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_248-2A-1:
+    path: data/GSM5354397_Hs_SAT_SVF_248-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_248
+    subsample: Hs_SAT_SVF_248-2A
+    library: Hs_SAT_SVF_248-2A-1
+    individual: Hs248
+    source: pannus
+    depot: SAT
+    age: 68
+    age_range: 60-70
+    sex: female
+    race: Caucasian
+    bmi: 32
+    bmi_range: 30-35
+    wtloss: lap band
+    cancer: none
+    t2dm: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_249-1A-1:
+    path: data/GSM5354398_Hs_SAT_SVF_249-1A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_249
+    subsample: Hs_SAT_SVF_249-1A
+    library: Hs_SAT_SVF_249-1A-1
+    individual: Hs249
+    source: pannus
+    depot: SAT
+    age: 54
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: lap band
+    cancer: cancer
+    t2dm: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_249-1B-1:
+    path: data/GSM5354399_Hs_SAT_SVF_249-1B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_249
+    subsample: Hs_SAT_SVF_249-1B
+    library: Hs_SAT_SVF_249-1B-1
+    individual: Hs249
+    source: pannus
+    depot: SAT
+    age: 54
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: lap band
+    cancer: cancer
+    t2dm: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_249-2A-1:
+    path: data/GSM5354400_Hs_SAT_SVF_249-2A-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_249
+    subsample: Hs_SAT_SVF_249-2A
+    library: Hs_SAT_SVF_249-2A-1
+    individual: Hs249
+    source: pannus
+    depot: SAT
+    age: 54
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: lap band
+    cancer: cancer
+    t2dm: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+  Hs_SAT_SVF_249-2B-1:
+    path: data/GSM5354401_Hs_SAT_SVF_249-2B-1.dge.tsv.gz
+    species: Homo sapiens
+    technology: Drop-Seq
+    tissue: SVF
+    sample: Hs_SAT_SVF_249
+    subsample: Hs_SAT_SVF_249-2B
+    library: Hs_SAT_SVF_249-2B-1
+    individual: Hs249
+    source: pannus
+    depot: SAT
+    age: 54
+    age_range: 50-60
+    sex: female
+    race: Caucasian
+    bmi: 26
+    bmi_range: 25-30
+    wtloss: lap band
+    cancer: cancer
+    t2dm: none
+    digestion: 45min collagenase
+    rbc: ACK
+    pcr: 16
+
+
+# valid integration methods are CCA and RPCA, reference needs to match integrate by (ie if integrate by sample, 
+# references should be sample names)
+integrate:
+  by: individual
+  nfeatures: 3000
+  method:
+    - RPCA
+  reference:
+    - Hs001
+    - Hs012
+    - Hs013
+    - Hs254
+    - Hs255
+    - Hs256
+    - Hs266
+
+#needed for RPCA, currently no option for iterating
+intdims: 50
+
+nCells:
+  - 2
+nUMIs:
+  - 400
+mito_cutoff:
+  - .1
+batches:
+  default:
+    - mt.percent
+variable_genes:
+  - 5000
+pcs:
+  - 50
+resolution:
+  - 0.5
+
+tsne: FALSE
+ribo: remove
+point_size: 0.1
+point_size_vln: 0

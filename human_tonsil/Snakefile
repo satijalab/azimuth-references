@@ -1,0 +1,94 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:human_tonsil-1.0.0"
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/demo.rds",
+        "full_reference.Rds"
+
+############################## Reference ######################################
+rule download:
+    output:
+        "data/obj.rds",
+    shell:
+        """
+        wget https://zenodo.org/record/6340174/files/20220215_tonsil_atlas_rna_seurat_obj.rds --directory-prefix data
+        mv data/20220215_tonsil_atlas_rna_seurat_obj.rds data/obj.rds
+        """
+
+rule build_reference:
+    input:
+        script = "scripts/build_reference.R",
+        obj = "data/obj.rds",
+        annotations = "data/celltype_annotations.csv",
+    output:
+        ref = "reference/ref.Rds",
+        idx = "reference/idx.annoy",
+        obj = "full_reference.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.obj} {input.annotations} {output.ref} {output.idx} {output.obj}
+        """
+
+################################ Demo ########################################
+rule download_demo:
+    output:
+        tonsil_1a = directory("data/Tonsil1a_count"),
+        tonsil_1b = directory("data/Tonsil1b_count"),
+        tonsil_2a = directory("data/Tonsil2a_count"),
+        tonsil_2b = directory("data/Tonsil2b_count"),
+        tonsil_3a = directory("data/Tonsil3a_count"),
+        tonsil_3b = directory("data/Tonsil3b_count"),
+        demo_complete = touch("data/download_demo_complete.txt") # dummy file to reuquire rule completion before running build_demo rule
+    shell:
+        """
+        wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051493/suppl/GSM5051493_Tonsil_1a_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
+        wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051494/suppl/GSM5051494_Tonsil_1b_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
+        wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051495/suppl/GSM5051495_Tonsil_2a_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
+        wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051496/suppl/GSM5051496_Tonsil_2b_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
+        wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051497/suppl/GSM5051497_Tonsil_3a_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
+        wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5051nnn/GSM5051498/suppl/GSM5051498_Tonsil_3b_scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz -P data
+        FILES=$(ls data/*.gz)
+        for FILE in $FILES; do
+            tar -xzvf $FILE -C data/
+        done
+        mv data/home/users/zshipony/oak/EZH2_scRNA/ADT_190924_KLW_test/Tonsil*/ ./data/
+        rm -rf data/home/
+        rm data/GSM*scRNA_seq_raw_feature_bc_matrix_mtx.tsv.tar.gz
+        """
+
+rule build_demo:
+    input:
+        demo_counts_dir = directory("data/"),
+        demo_cell_calls_dir = directory("data/demo_cell_calls/"),
+        demo_script = "scripts/build_demo.R",
+        demo_complete = "data/download_demo_complete.txt"
+    output:
+        demo = "reference/demo.rds"
+    shell:
+        """
+        Rscript {input.demo_script} {input.demo_counts_dir} {input.demo_cell_calls_dir} {output.demo}
+        """
+
+############################## Explorer  ########################################
+rule export_zarr:
+    input:
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat}
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
