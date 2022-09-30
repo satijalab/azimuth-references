@@ -1,0 +1,59 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:human_adipose-1.0.0" 
+#containerized: "docker/test.sif"
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+
+############################## Reference ######################################
+rule download:
+    params:
+        data_url = "https://cellgeni.cog.sanger.ac.uk/gutcellatlas/Full_obj_raw_counts_nosoupx_v2.h5ad",
+    output:
+        "logs/download_data.log",
+        "data/Full_obj_raw_counts_nosoupx_v2.h5ad"
+    shell:
+        """
+        wget {params.data_url} -P data
+        echo "Gut reference data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_reference:
+    input:
+        script = "scripts/build_reference.R",
+        data = "data/Full_obj_raw_counts_nosoupx_v2.h5ad"
+        #annotations = "annotations.csv"
+    output:
+        #ref = "reference/ref.Rds",
+        #idx = "reference/idx.annoy",
+        obj = "full_reference.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {output.obj} 
+        """
+############################## Demo ######################################
+rule download_demo:
+    params:
+        demo_url = '"https://seurat.nygenome.org/azimuth_snakemake_files/human_heart/healthy_human_4chamber_map_unnormalized_V4.h5ad"'
+    output:
+        "logs/download_data.log",
+        "data/demo/healthy_human_4chamber_map_unnormalized_V4.h5ad"
+    shell:
+        """
+        wget {params.demo_url} -P data/demo
+        echo "Demo data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_demo:
+    input:
+        script = "scripts/build_demo.R",
+        demo = "data/demo/healthy_human_4chamber_map_unnormalized_V4.h5ad"
+    output:
+        obj = "reference/demo.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.demo} {output.obj}
+        """
+   
