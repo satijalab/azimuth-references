@@ -1,6 +1,6 @@
 ############################## Config #########################################
 container: "docker://satijalab/azimuth-references:human_adipose-1.0.0" 
-#containerized: "docker/test.sif"
+
 ############################## All ############################################
 rule all:
     input:
@@ -33,7 +33,6 @@ rule download:
         'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE158723&format=file'
         mkdir data/payen/
         tar -xvf data/JHEP_GSE158723.tar -C data/payen/
-
         FILES=$(ls data/payen/*.gz)
         for f in $FILES ; do
             basename=$(basename ${{f}})
@@ -44,11 +43,9 @@ rule download:
             mv "$substring" data/payen/GSM"$num"/
             gunzip data/payen/GSM"$num"/"$substring"
         done
-
         wget -O data/GSE136103_RAW.tar {params.ramachandran_url}
         mkdir data/ramachandran/
         tar -xvf data/GSE136103_RAW.tar -C data/ramachandran/
-
         FILES=$(ls data/ramachandran/*healthy[0-9]*)
         for f in $FILES ; do
             basename=$(basename ${{f}})
@@ -60,7 +57,6 @@ rule download:
             gunzip data/ramachandran/GSM"$num"/"$substring"
         done
         rm data/ramachandran/*.gz
-
         wget {params.zhang_url} -P data
         mkdir data/zhang/
         tar -xvf data/GSE138709_RAW.tar -C data/zhang/
@@ -76,7 +72,7 @@ rule build_reference:
         payen = "data/payen",
         ramachandran = "data/ramachandran",
         zhang = "data/zhang",
-        annotations = "annotations.rds"
+        annotations = "data/annotations.csv"
     output:
         ref = "reference/ref.Rds",
         idx = "reference/idx.annoy",
@@ -112,3 +108,22 @@ rule build_demo:
         Rscript {input.script} {input.demo} {output.obj}
         """
    
+############################## Explorer  ########################################
+rule export_zarr:
+    input:
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat}
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
