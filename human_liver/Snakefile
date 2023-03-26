@@ -1,0 +1,129 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:human_adipose-1.0.0" 
+
+############################## All ############################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy"
+
+############################## Reference ######################################
+rule download:
+    params:
+        aizarani_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE124nnn/GSE124395/suppl/GSE124395_Normalhumanlivercellatlasdata.txt.gz",
+        macparland_url = "'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE115469&format=file&file=GSE115469%5FData%2Ecsv%2Egz'",
+        payen_url = "'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE158723&format=file'", 
+        ramachandran_url = "'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE136103&format=file'", 
+        zhang_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE138nnn/GSE138709/suppl/GSE138709_RAW.tar"
+    output:
+        "logs/download_data.log",
+        "data/GSE124395_Normalhumanlivercellatlasdata.txt",
+        "data/natcomm_GSE115469.csv.gz",
+        "data/mockfile.txt"
+        #"data/payen/*.gz",
+        #"data/ramachandran/*.gz",
+        #"data/zhang/*.gz"
+    shell:
+        """
+        wget {params.aizarani_url} -P data
+        gunzip data/GSE124395_Normalhumanlivercellatlasdata.txt.gz 
+        wget -O data/natcomm_GSE115469.csv.gz \
+        {params.macparland_url}
+        wget -O data/JHEP_GSE158723.tar \
+        'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE158723&format=file'
+        mkdir data/payen/
+        tar -xvf data/JHEP_GSE158723.tar -C data/payen/
+        FILES=$(ls data/payen/*.gz)
+        for f in $FILES ; do
+            basename=$(basename ${{f}})
+            num=${{basename:8:2}}
+            substring=$(echo $f| cut --complement -d'_' -f 1,2)
+            mv "$f" "$substring"
+            mkdir -p data/payen/GSM"$num"
+            mv "$substring" data/payen/GSM"$num"/
+            gunzip data/payen/GSM"$num"/"$substring"
+        done
+        wget -O data/GSE136103_RAW.tar {params.ramachandran_url}
+        mkdir data/ramachandran/
+        tar -xvf data/GSE136103_RAW.tar -C data/ramachandran/
+        FILES=$(ls data/ramachandran/*healthy[0-9]*)
+        for f in $FILES ; do
+            basename=$(basename ${{f}})
+            num=${{basename:8:2}}
+            substring=$(echo $f| cut --complement -d'_' -f 1,2,3)
+            mv "$f" "$substring"
+            mkdir -p data/ramachandran/GSM"$num"
+            mv "$substring" data/ramachandran/GSM"$num"/
+            gunzip data/ramachandran/GSM"$num"/"$substring"
+        done
+        rm data/ramachandran/*.gz
+        wget {params.zhang_url} -P data
+        mkdir data/zhang/
+        tar -xvf data/GSE138709_RAW.tar -C data/zhang/
+        touch data/mockfile.txt
+        echo "Liver reference data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_reference:
+    input:
+        script = "scripts/build_reference.R",
+        aizarani = "data/GSE124395_Normalhumanlivercellatlasdata.txt",
+        macparland = "data/natcomm_GSE115469.csv.gz",
+        payen = "data/payen",
+        ramachandran = "data/ramachandran",
+        zhang = "data/zhang",
+        annotations = "data/annotations.csv"
+    output:
+        ref = "reference/ref.Rds",
+        idx = "reference/idx.annoy",
+        obj = "full_reference.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.aizarani} {input.macparland} {input.payen} {input.ramachandran} {input.zhang} {input.annotations} {output.ref} {output.idx} {output.obj} 
+        """
+############################## Demo ######################################
+rule download_demo:
+    params:
+        demo_url = "https://www.livercellatlas.org/data_files/toDownload/rawData_human.zip"
+    output:
+        "logs/download_data.log",
+        "data/demo/rawData_human/countTable_human/barcodes.tsv.gz",
+        "data/demo/rawData_human/countTable_human/features.tsv.gz",
+        "data/demo/rawData_human/countTable_human/matrix.mtx.gz"
+    shell:
+        """
+        wget {params.demo_url} - P data/demo
+        gunzip rawData_human 
+        echo "Demo data downloaded on: $(date)" > logs/download_data.log 
+        """
+
+rule build_demo:
+    input:
+        script = "scripts/build_demo.R",
+        demo = "data/demo/rawData_human/countTable_human/"
+    output:
+        obj = "reference/demo.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.demo} {output.obj}
+        """
+   
+############################## Explorer  ########################################
+rule export_zarr:
+    input:
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """ 
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat}
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """ 
