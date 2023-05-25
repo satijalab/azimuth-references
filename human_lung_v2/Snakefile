@@ -5,7 +5,7 @@ container: "docker://satijalab/azimuth-references:human_lung-2.0.0"
 rule all:
     input:
         "reference/ref.Rds",
-        "reference/idx.annoy"
+        "reference/idx.annoy",
         "reference/ts_opt.rds"
 
 ############################## Reference ######################################
