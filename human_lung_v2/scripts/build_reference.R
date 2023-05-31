@@ -19,12 +19,13 @@ obj <- CreateSeuratObject(counts = mtx)
 
 # load annotations
 annotations <- read_parquet(annotations.path)
-rownames(annotations) <- annotations$X
-annotations$X <- NULL
+annotations <- as.data.frame(annotations)[,c("ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level")]
+rownames(annotations) <- Cells(obj)
 obj <- AddMetaData(obj, metadata = annotations)
+print(head(obj))
 
 # load in the scANVI latent space which contains 30 dimensions
-latent.space <- read_parquet(dr.path)
+latent.space <- as.matrix(read_parquet(dr.path))
 rownames(latent.space) <- Cells(obj)
 scanvi.dr <- CreateDimReducObject(embeddings = as.matrix(latent.space), key = "SCANVI")
 obj[["scanvi"]] <- scanvi.dr
@@ -51,7 +52,7 @@ ref <- AzimuthReference(obj,
                         refDR = 'spca',
                         dims = 1:50, # use 50 dimensions from the sPCA dimensional reduction
                         plotref = 'umap',
-                        reference.version = '2.0.0',
+                        reference.version = '2.0.1',
                         metadata = annotations)
 
 saveRDS(object = ref, file = ref.path, compress = F)

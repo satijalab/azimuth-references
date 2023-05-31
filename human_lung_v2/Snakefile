@@ -30,9 +30,9 @@ rule build_reference:
         annotations = "data/annotations.parquet",
         dr = "data/scanvi.parquet"
     output:
-        ref = "reference/ref.Rds",
-        idx = "reference/idx.annoy",
-        obj = "full_reference.Rds"
+        ref = protected("reference/ref.Rds"),
+        idx = protected("reference/idx.annoy"),
+        obj = protected("full_reference.Rds")
     shell:
         """
         Rscript {input.script} {input.counts} {input.annotations} {input.dr} {output.ref} {output.idx} {output.obj}
