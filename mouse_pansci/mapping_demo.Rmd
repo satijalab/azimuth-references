@@ -1,0 +1,70 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(Seurat)
+library(Azimuth)
+```
+```{r}
+kidney_path <- "/brahms/shared/mouse_azimuth/mouse_kidney_2023.rds"
+allenbrain_path <- "/brahms/shared/mouse_azimuth/sketched_allen_brain_10x_with_umap.rds"
+refdir <- "/brahms/shared/mouse_azimuth/pansci_reference_genesymbol/"
+```
+# Preprocess query table sets to map 
+```{r}
+# query <- readRDS(kidney_path)
+query <- readRDS(allenbrain_path)
+```
+```{r}
+query <- SCTransform(query, variable.features.n = 5000)
+query <- RunPCA(query, assay = "SCT", reduction.name = "pca.sct", npcs = 100)
+query <- RunUMAP(query, reduction = "pca.sct", reduction.name = "umap.sct", dims = 1:100, return.model = T)
+query <- FindNeighbors(query, reduction = "pca.sct", dims = 1:30, verbose = FALSE)
+query <- FindClusters(query, graph.name = "SCT_snn", verbose = FALSE)
+```
+```{r}
+DefaultAssay(query) <- "RNA"
+query <- Normalizetable (query)
+query <- FindVariableFeatures(query, nfeatures = 5000)
+query <- Scaletable (query)
+query <- RunPCA(query, npcs = 100)
+query <- RunUMAP(query, dims = 1:50, return.model = T)
+```
+```{r}
+#kidney <- query
+brain <- query
+```
+```{r}
+query.mapped <- RunAzimuth(query = brain, reference = refdir, assay="RNA")
+saveRDS(query.mapped, file="/brahms/shared/mouse_azimuth/allenbrain_predicted.rds")
+```
+# Evaluation
+```{r}
+savedir <- "/home/lis/azimuth-references/mouse_pansci/kidney_mapping/"
+query.mapped <- readRDS("/brahms/shared/mouse_azimuth/kidney_predicted2.rds")
+```
+```{r}
+p1 <- DimPlot(query.mapped, group.by = "predicted.Main_cell_type", label = T, repel = T, alpha = 0.1) + NoLegend()
+p2 <- DimPlot(query.mapped, group.by = "predicted.Sub_cell_type_organ", label = T, repel = T, alpha = 0.1) + NoLegend()
+p3 <- DimPlot(query.mapped, group.by = "predicted.Sub_cell_type", label = T, repel = T, alpha = 0.1) + NoLegend()
+p4 <- DimPlot(query.mapped, group.by = "cell_type", label = T, repel = T, alpha = 0.1) + NoLegend()
+p5 <- DimPlot(query.mapped, reduction = "integrated_dr", group.by = "predicted.Main_cell_type", label = T, repel = T, alpha = 0.1) + NoLegend()
+ggsave(paste0(savedir, "predicted_main.png"), plot = p1)
+ggsave(paste0(savedir, "predicted_sub_organ.png"), plot = p2)
+ggsave(paste0(savedir, "predicted_sub.png"), plot = p3)
+ggsave(paste0(savedir, "orig_celltype.png"), plot = p4)
+ggsave(paste0(savedir, "integrateddr_main.png"), plot = p5)
+```
+```{r}
+library(ggplot2)
+contingency_table <- table(query.mapped$cell_type, query.mapped$predicted.Main_cell_type)
+contingency_df <- as.data.frame(as.table(contingency_table))
+p6 <- ggplot(contingency_df, aes(x = Var1, y = Var2, fill = Freq)) +
+  geom_tile(color = "grey", size = 0.1) +
+  scale_fill_gradient(low = "#fffddf", high = "purple") +
+  theme_minimal() +
+  labs(x = "Predicted Main Cell Type", y = "Actual Cell Type", fill = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave(paste0(savedir, "contingency_celltype.png"), plot = p6)
+```
