@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+pansci.mtx <- Layertable (pansci, assay="RNA", layer="counts")
+rownames(pansci.mtx) <- substr(rownames(pansci[['RNA']]), 1, 18)
+pansci.mtx <- CreateAssayObject(counts = pansci.mtx)
+pansci.renamed <- CreateSeuratObject(counts=pansci.mtx, assay="RNA")
+```
+```{r}
+# Unable to map 16020 of 55416 requested IDs --> for genes without a match it just gives empty 
+# With v75, unable to map 20869 of 55416 requested IDs 
+edb <- EnsDb.Mmusculus.v79
+pansci.renamed79 <- mapIds(x = edb, keys = rownames(pansci.renamed), column = "SYMBOL", keytype = "GENEID")
+notfound_ensdb79 <- names(which(sapply(pansci.renamed79, function(x) is.na(x) | x == "")))
+```
+```{r}
+# Results in no map for 3024 out of total 55416 features, or 71 out of 5000 VFs 
+table <- read.table(url("https://raw.githubusercontent.com/obophenotype/brain_table_standards_ontologies/cross_species/src/templates/ensmusg.tsv"), sep="\t", header=TRUE)
+table$ID <- sub("ensembl:", "", table$ID)
+
+# to fill in unmapped IDs from ensdb
+for(ensmusg_id in rownames(pansci.renamed)) {
+  if(is.na(pansci.renamed[ensmusg_id]) | pansci.renamed[ensmusg_id] == "") {
+    match_index <- which(table$ID == ensmusg_id)
+    if(length(match_index) > 0) {
+      pansci.renamed[ensmusg_id] <- table$NAME[match_index]
+    }
+  }
+}
+
+# to fully annotate with obophenotype 
+pansci.renamedobo <- rownames(pansci.renamed)
+new_table <- data.frame(ID = character(), NAME = character(), stringsAsFactors = FALSE)
+for(id in pansci.renamedobo) {
+  matches <- which(table$ID == id)
+  if(length(matches) > 0) {
+    preferred_matches <- table[matches,]
+    non_gm_matches <- preferred_matches[!grepl("^Gm", preferred_matches$NAME),]
+    if(nrow(non_gm_matches) > 0) {
+      match_to_use <- non_gm_matches[1,]
+    } else {
+      match_to_use <- preferred_matches[1,]
+    }
+    new_table <- rbind(new_table, c(ID = id, NAME = match_to_use$NAME))
+  } else {
+    new_table <- rbind(new_table, c(ID = id, NAME = ""))
+  }
+}
+notfound_obo <- new_table[is.na(new_table[,2]), ] #3024 genes
+```
+```{r}
+notfound_both <- intersect(notfound_obo[,1], notfound_ensdb79) #3024 genes
+foundobo_notfoundensdb79 <- setdiff(notfound_ensdb79, notfound_obo)
+```
+```{r}
+# 2145 out of 3024 (of total features) have no map, 52 out of 71 (of all VFs) have no map 
+library(org.Mm.eg.db)
+org <- org.Mm.eg.db
+names2 <- mapIds(org, notfound_both, keytype="ENSEMBL", column="SYMBOL")
+empty_names2 <- names(which(sapply(names2, function(x) is.na(x) | x == "")))
+```
+```{r}
+names3 <- mapIds(org, rownames(pansci.renamed), keytype="ENSEMBL", column="SYMBOL")
+empty_names3 <- names(which(sapply(names3, function(x) is.na(x) | x == "")))
+```
+```{r}
+reference <- c("Hsap1", "Ptro1", "Mmul1", "Btau1", "Fcat1")
+pansci.renamed <- ConvertGeneNames(
+    object = pansci.renamed,
+    reference.names = rownames(x = reference),
+    homolog.table = 'https://seurat.nygenome.org/azimuth/references/homologs.rds'
+)
+```

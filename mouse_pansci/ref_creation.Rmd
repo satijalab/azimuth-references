@@ -1,0 +1,58 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(Seurat)
+library(Azimuth)
+library(EnsDb.Mmusculus.v79)
+```
+```{r}
+pansci_path <- "/brahms/mollag/azimuth/pansci/pansci_SCT_processed_umap_100_dims.rds"
+```
+# Make PanSci mouse reference
+```{r}
+pansci_orig <- readRDS(pansci_path)
+```
+```{r}
+# Retrieve counts to prep for renaming features by removing versioning 
+pansci.mtx <- LayerData(pansci_orig, assay="RNA", layer="counts")
+rownames(pansci.mtx) <- substr(rownames(pansci_orig[['RNA']]), 1, 18)
+```
+```{r}
+# Map with Ensmbl ID
+## NOTE: Unable to map 16020 of 55416 requested IDs --> for genes without a match it just gives empty 
+edb <- EnsDb.Mmusculus.v79
+pansci.renames <- mapIds(x = edb, keys = rownames(pansci.mtx), column = "SYMBOL", keytype = "GENEID")
+notfound_ensdb79 <- names(which(sapply(pansci.renames, function(x) is.na(x) | x == "")))
+```
+```{r}
+# Subset counts matrix to only genes with EnsemblID to gene symbol mappings 
+valid_genes <- Filter(function(g) !is.na(g) && g != "", pansci.renames)
+all_genes <- sapply(rownames(pansci.mtx), function(id) if(id %in% names(valid_genes)) valid_genes[[id]] else NA)
+pansci.mtx <- pansci.mtx[!is.na(all_genes) & all_genes != "", ]
+valid_names <- setdiff(names(pansci.renames), notfound_ensdb79)
+rownames(pansci.mtx) <- unname(pansci.renames[valid_names])
+```
+```{r}
+# Create object
+pansci.mtx <- CreateAssayObject(counts = pansci.mtx)
+pansci.renamed <- CreateSeuratObject(counts=pansci.mtx, assay="RNA")
+```
+```{r}
+pansci.renamed <- SCTransform(pansci.renamed, variable.features.n = 5000)
+pansci.renamed <- RunPCA(pansci.renamed, assay = "SCT", reduction.name = "pca", npcs = 100)
+pansci.renamed <- RunUMAP(pansci.renamed, dims = 1:50, return.model = T)
+pansci.renamed@meta.table  <- pansci_orig@meta.table 
+DefaultAssay(pansci.renamed) <- "SCT"
+
+pansci.renamed <- AzimuthReference(pansci.renamed,
+                        refUMAP='umap',
+                        refDR='pca',
+                        refAssay = 'SCT',
+                        plotref='umap',
+                        metatable  = c("Main_cell_type","Sub_cell_type", "Sub_cell_type_organ"))
+
+saveRDS(object = pansci.renamed, file =  "/brahms/shared/mouse_azimuth/pansci_reference_genesymbol/ref.Rds", compress=F)
+SaveAnnoyIndex(object = pansci.renamed[["refdr.annoy.neighbors"]], file = "/brahms/shared/mouse_azimuth/pansci_reference_genesymbol/idx.annoy")
+```
