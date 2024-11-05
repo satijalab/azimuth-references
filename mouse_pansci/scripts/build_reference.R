@@ -2,21 +2,21 @@
 
 # Script to build mouse pansci reference 1.0.0
 
-# Rscript {input.script} {input.counts} {input.annotations} {input.dr} {output.ref} {output.idx} {output.obj}
+# Rscript {input.script} {input.counts} {input.genenames} {input.dr} {output.ref} {output.idx} {output.obj}
 
 library(Seurat)
 library(Azimuth)
 
 args = commandArgs(trailingOnly=TRUE)
 obj_original <- readRDS(args[1])
-annotations <- read.csv(args[2], row.names = 1)
+genenames <- read.csv(args[2], row.names = 1)
 azimuth.reference <- args[3]
 azimuth.index <- args[4]
 full.reference <- args[5]
 
 # Convert gene IDs to gene symbols based on annotations file 
 pansci.mtx <- LayerData(obj_original, assay="RNA", layer="counts")
-gene_names <- read.csv(annotations)
+gene_names <- read.csv(genenames)
 rownames(pansci.mtx) <- gene_names$gene_name
 subset.pansci.mtx <- pansci.mtx[grep("^ENSMUSG", rownames(pansci.mtx), invert = TRUE), ]
 

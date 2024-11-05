@@ -1,8 +1,6 @@
 #!/usr/bin/env Rscript
 
-# Script to build human liver demo
-
-# Demo object can be downloaded at https://cellxgene.cziscience.com/collections/fe0e718d-2ee9-42cc-894b-0b490f437dfd
+# Script to build demo
 
 library(Seurat)
 library(SeuratDisk)

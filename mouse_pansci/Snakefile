@@ -1,0 +1,82 @@
+############################## Config #########################################
+container: "docker://satijalab/azimuth-references:latest" 
+
+############################## All  ###########################################
+rule all:
+    input:
+        "reference/ref.Rds",
+        "reference/idx.annoy",
+        "reference/demo.rds"
+
+############################## Reference #######################################
+rule download:
+    params:
+        data_url = "https://zenodo.org/records/14042645/files/pansci_filtered.rds"
+    output:
+        "logs/download_data.log",
+        "data/obj.rds"
+    shell:
+        """
+        wget {params.data_url} -P data
+        mv data/pansci_filtered.rds data/obj.rds
+        echo "Mouse PanSci data downloaded on: $(date)" > logs/download_data.log
+        """
+
+rule build_reference:
+    input:
+        script = "scripts/build_reference.R",
+        obj = "data/obj.rds",
+        annotations = "data/pansci_genenames.csv",
+    output:
+        ref = "reference/ref.Rds",
+        idx = "reference/idx.annoy",
+        obj = "full_reference.Rds"
+    shell:
+        """
+        Rscript {input.script} {input.obj} {input.genenames} {output.ref} {output.idx} {output.obj}
+        """
+
+############################## Demo ############################################
+rule download_demo:
+    params:
+        data_url = "https://datasets.cellxgene.cziscience.com/4103ff27-c13c-4092-87a7-5cd71ce57d26.rds",
+    output:
+        "logs/download_demo_data.log",
+        "data/demo/adipose_emont_2022.rds"
+    shell:
+        """
+        wget {params.data_url} -P data/demo
+        mv data/demo/4103ff27-c13c-4092-87a7-5cd71ce57d26.rds data/demo/adipose_emont_2022.rds
+        echo "Mouse adipose demo data downloaded on: $(date)" > logs/download_demo_data.log
+        """
+
+rule setup_demo:
+    input:
+        data = "data/demo/adipose_emont_2022.rds"
+        script = "scripts/setup_demo.R",
+
+    output:
+        "reference/adipose_emont_2022_subset.rds"
+    shell:
+        """
+        Rscript {input.script} {input.data} {output} > logs/setup_demo.Rout 2>&1
+        """
+
+rule export_zarr:
+    input: 
+        ref = "reference/ref.Rds",
+        fullref = "full_reference.Rds",
+        script1 = "scripts/convert_to_h5ad.R",
+        script2 = "scripts/convert_to_zarr.py"
+    output:
+        h5Seurat = "vitessce/vitessce_ref.h5Seurat",
+        h5ad = "vitessce/vitessce_ref.h5ad",
+        zarr = directory("vitessce/vitessce_ref.zarr")
+    container:
+        "docker://satijalab/azimuth-references:vitessce"
+    shell:
+        """
+        mkdir -p vitessce
+        Rscript {input.script1} {input.ref} {input.fullref} {output.h5Seurat} > logs/export_zarr_anndata.Rout 2>&1
+        python3 {input.script2} {output.h5ad} {output.zarr}
+        """
