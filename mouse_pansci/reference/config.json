@@ -1,0 +1,13 @@
+{
+    "Azimuth.app.reference": "/reference-data/mouse_pansci/",
+    "Azimuth.app.demodataset": "/reference-data/mouse_pansci/demo.rds",
+    "Azimuth.app.max_cells": 100000,
+    "Azimuth.app.default_gene": "GLNY",
+    "Azimuth.app.default_metadata": "subclass",
+    "Azimuth.app.do_adt": "FALSE",
+    "Azimuth.app.welcomebox": "div(\n    h3(HTML(\"Please upload a dataset to map to the <b>mouse PanSci</b> reference\")),\n    \"Upload a counts matrix from an scRNA-seq dataset of mouse data in one\n        of the following formats: hdf5, rds, h5ad, h5seurat. For testing, we\n        also provide a demo dataset of 20000 mouse adipose cells (10x Genomics v3),\n        which is loaded automatically with the 'Load demo dataset' button.\",\n    width = 12\n  )",
+    "Azimuth.app.refdescriptor": "<div class='refdescriptor'><br>This reference was generated from the PanSci mouse organismal aging atlas originally described in <a href='https://www.biorxiv.org/content/10.1101/2024.03.01.583001v1'>Zhang et al., 2024</a>, this data was integrated across 3 genetic backgrounds. Annotations are provided at the level of <i>main cell type</i>, <i>sub cell type</i>, and <i>organ</i>. </div>",
+    "Azimuth.app.refuri": "https://seurat.nygenome.org/azimuth/references/v1.0.0/mouse_pansci",
+    "shiny.maxRequestSize": 1048576000,
+    "Azimuth.app.do_adt": "FALSE"
+  }
